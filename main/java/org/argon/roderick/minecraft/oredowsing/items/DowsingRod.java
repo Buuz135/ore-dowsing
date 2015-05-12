@@ -44,7 +44,7 @@ public class DowsingRod extends Item
     {
     	list.add("Right-click to highlight "
     			+ (curTargetBlock != null ? curTargetBlock.getLocalizedName() : "ores"));
-    	list.add("inside a " + (1+2*curSquareRadius) + "-block cube around you.");
+    	list.add("inside a size " + (1+2*curSquareRadius) + " cube around you.");
     }
     
     //@SideOnly(Side.CLIENT)
