@@ -142,11 +142,11 @@ public class DowsingRod extends Item
 
     public void divine(ItemStack stack, World world, EntityPlayer player)
     {
+    	stack.damageItem(DAMAGE_PER_USE, player);
+
     	if (!world.isRemote)
     		return;
     	
-    	stack.damageItem(DAMAGE_PER_USE, player);
-
         int x, y, z;
     	int ct = 0;
     	for (x = (int)player.posX - curSquareRadius; x <= player.posX + curSquareRadius; x++) {
