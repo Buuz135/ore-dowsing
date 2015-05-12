@@ -1,0 +1,6 @@
+- release checklist
+    - update version in Reference.java
+    - edit changelog.md
+    - commit
+    - git tag
+    - ./gradlew build, pull jar
