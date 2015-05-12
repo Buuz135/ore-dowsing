@@ -44,7 +44,7 @@ public class ModItems extends Item
     		    "xxx",
     		    "x x",
     		    'x', new ItemStack(Items.gold_ingot),
-    		    'y', new ItemStack(Items.dye));
+    		    'y', new ItemStack(Items.dye, 1, 4)); // XXX constant for 4?
 
     	RegisterHelper.registerItem(diamondDowsingRod);
     	GameRegistry.addRecipe(
