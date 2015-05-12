@@ -1,0 +1,17 @@
+[
+{
+  # XXX can't these come with ${}?
+  "modid": "oredowsing",
+  "name": "Ore Dowsing",
+  "description": "Dowsing rods to help find ores and other blocks.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Popsnorkle"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
