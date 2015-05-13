@@ -2,7 +2,6 @@ Plans/to do:
 ============
 
 - better sprites (help appreciated!)
-- match block metadata
 - give each block a reasonable (automatically determined) static color
   for its outline
     - investigate cofh.lib.util.getBlockTextureColor()

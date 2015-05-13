@@ -25,9 +25,10 @@ public class DowsingRod extends Item
 
 	private static final String NBT_RADIUS		= "radius";
 	private static final String NBT_TARGET_BLOCK_ID = "block_id";
+	private static final String NBT_TARGET_BLOCK_METADATA = "block_metadata";
                                                                                  
-	private Block forcedTargetBlock; // null for any ore
-	private int baseSquareRadius;
+	private final Block forcedTargetBlock; // null for any ore
+	private final int baseSquareRadius;
 
     public DowsingRod(String parNamePrefix, Block parForcedTargetBlock, int parMaxDamage, int parSquareRadius)
     {
@@ -48,18 +49,21 @@ public class DowsingRod extends Item
     		stack.stackTagCompound= new NBTTagCompound();
     	}
         if (forcedTargetBlock != null) {
-        	forceSetTargetBlock(stack, forcedTargetBlock, null);
+        	forceSetTarget(stack, forcedTargetBlock, 0, null);
         }
     	stack.stackTagCompound.setInteger(NBT_RADIUS, baseSquareRadius);
     }
     
-    private Block getTargetBlock(ItemStack stack)
+    private ItemStack getTargetStack(ItemStack stack)
     {
     	if (stack.stackTagCompound == null) {
     		initNBT(stack);
     	}
-    	int target_block_id = stack.stackTagCompound.getInteger(NBT_TARGET_BLOCK_ID);
-    	return target_block_id == 0 ? null : Block.getBlockById(target_block_id);
+    	int block_id = stack.stackTagCompound.getInteger(NBT_TARGET_BLOCK_ID);
+    	int metadata = stack.stackTagCompound.getInteger(NBT_TARGET_BLOCK_METADATA);
+    	return block_id == 0
+    			? null
+    			: new ItemStack(Block.getBlockById(block_id), 1, metadata);
     }
 
     private int getSquareRadius(ItemStack stack)
@@ -77,8 +81,8 @@ public class DowsingRod extends Item
     		initNBT(stack);
     	}
 
-    	Block b = getTargetBlock(stack);
-    	list.add("Right-click to highlight " + (b != null ? b.getLocalizedName() : "ores"));
+    	ItemStack target_stack = getTargetStack(stack);
+    	list.add("Right-click to highlight " + (target_stack != null ? target_stack.getDisplayName() : "ores"));
     	list.add("inside a size " + (1+2*getSquareRadius(stack)) + " cube around you.");
     	if (forcedTargetBlock == null) {
     		list.add("Shift-right-click to change target block.");
@@ -94,7 +98,7 @@ public class DowsingRod extends Item
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
     {
     	if (isShifted()) {
-    		setTargetBlock(stack, null, world.isRemote ? null : player);
+    		setTarget(stack, null, 0, world.isRemote ? null : player);
     	}
     	else {
     		divine(stack, world, player);
@@ -106,7 +110,8 @@ public class DowsingRod extends Item
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
     {
     	if (isShifted()) {
-    		setTargetBlock(stack, world.getBlock(x, y, z),
+    		setTarget(stack, world.getBlock(x, y, z),
+    				world.getBlockMetadata(x, y, z),
     				world.isRemote ? null : player);
     	}
     	else {
@@ -115,7 +120,7 @@ public class DowsingRod extends Item
     	return true;
     }
     
-	public void setTargetBlock(ItemStack stack, Block targetBlock, EntityPlayer player)
+	public void setTarget(ItemStack stack, Block targetBlock, int metadata, EntityPlayer player)
 	{
 		if (forcedTargetBlock != null) {
 			if (player != null) {
@@ -123,33 +128,35 @@ public class DowsingRod extends Item
 			}
 			return;
 		}
-		forceSetTargetBlock(stack, targetBlock, player);
+		forceSetTarget(stack, targetBlock, metadata, player);
 	}
 	
-    private void forceSetTargetBlock(ItemStack stack, Block targetBlock, EntityPlayer player)
+    private void forceSetTarget(ItemStack stack, Block targetBlock, int metadata, EntityPlayer player)
     {
     	if (stack.stackTagCompound == null) {
     		initNBT(stack);
     	}
         stack.stackTagCompound.setInteger(NBT_TARGET_BLOCK_ID,
         		targetBlock == null ? 0 : Block.getIdFromBlock(targetBlock));
+        stack.stackTagCompound.setInteger(NBT_TARGET_BLOCK_METADATA, metadata);
     	if (player != null) {
     		player.addChatMessage(new ChatComponentText("Target set to "
-    				+ (targetBlock == null ? "all ores" : targetBlock.getLocalizedName())));
+    				+ (targetBlock == null
+    					? "all ores"
+    					: new ItemStack(targetBlock, 1, metadata).getDisplayName())));
     	}
     }
     
-    	// XXX does this have to use stack?
-    public boolean blockMatches(ItemStack stack, Block worldBlock)
+    public boolean blockMatches(ItemStack stack, ItemStack world_stack)
     {
-    	Block targetBlock = getTargetBlock(stack);
+    	ItemStack target_stack = getTargetStack(stack);
+    	int[] target_ore_ids = OreDictionary.getOreIDs(target_stack);
 
     	// detect specific block, but use ore dictionary
-/*
-    	if (curTargetOreIDs.length > 0) {
-    		int[] worldOreIDs = OreDictionary.getOreIDs(new ItemStack(worldBlock));
-    		for (int targ_id : curTargetOreIDs) {
-    			for (int world_id : worldOreIDs) {
+    	if (target_ore_ids.length > 0) {
+    		int[] world_ore_ids = OreDictionary.getOreIDs(world_stack);
+    		for (int targ_id : target_ore_ids) {
+    			for (int world_id : world_ore_ids) {
     				if (targ_id == world_id) {
     					return true;
     				}
@@ -157,19 +164,14 @@ public class DowsingRod extends Item
     		}
     		return false;
     	}
-*/
-    	if (false) {}
     	
     	// detect specific block, no ore dictionary
-    	else if (targetBlock != null) {
-    		return OreDictionary.itemMatches(
-    				new ItemStack(worldBlock),
-    				new ItemStack(targetBlock),
-    				true);
+    	else if (target_stack != null) {
+    		return OreDictionary.itemMatches(world_stack, target_stack, true);
     	}
     	
     	// detect any ore
-        for (int id : OreDictionary.getOreIDs(new ItemStack(worldBlock))) {
+        for (int id : OreDictionary.getOreIDs(world_stack)) {
         	String name = OreDictionary.getOreName(id);
         	if (name.startsWith("ore")) { // XXX better way?
         			return true;
@@ -186,12 +188,14 @@ public class DowsingRod extends Item
     		return;
     	
     	int r = getSquareRadius(stack);
-        int x, y, z;
     	int ct = 0;
+        int x, y, z;
     	for (x = (int)player.posX - r; x <= player.posX + r; x++) {
     		for (y = (int)player.posY - r; y <= player.posY + r; y++) {
     			for (z = (int)player.posZ - r; z <= player.posZ + r; z++) {
-    				if (blockMatches(stack, world.getBlock(x, y, z))) {
+    				if (blockMatches(stack,
+    						new ItemStack(world.getBlock(x, y, z), 1,
+    								world.getBlockMetadata(x, y, z)))) {
     					ct++;
     					DowsingRodRenderer.addBlockToHighlight(new ChunkCoordinates(x, y, z), world, player, RENDER_DURATION);
     				}
