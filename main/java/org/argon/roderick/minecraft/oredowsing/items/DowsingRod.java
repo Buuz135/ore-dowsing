@@ -6,6 +6,7 @@ import org.argon.roderick.minecraft.oredowsing.lib.Reference;
 import org.argon.roderick.minecraft.oredowsing.render.DowsingRodRenderer;
 import org.lwjgl.input.Keyboard;
 
+import cofh.api.energy.IEnergyContainerItem;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,20 +18,22 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class DowsingRod extends Item
+public class DowsingRod extends Item implements IEnergyContainerItem
 {
 	private static final String BASE_NAME       = "DowsingRod";              
 	private static final int    DAMAGE_PER_USE  = 1;                         
 	private static final float  RENDER_DURATION = 30.0F;                     
+	private static final int    RF_PER_DAMAGE   = 3000;
 
 	private static final String NBT_RADIUS		= "radius";
 	private static final String NBT_TARGET_BLOCK_ID = "block_id";
 	private static final String NBT_TARGET_BLOCK_METADATA = "block_metadata";
                                                                                  
-	private final Block forcedTargetBlock; // null for any ore
-	private final int baseSquareRadius;
+	private final Block   forcedTargetBlock; // null for any ore
+	private final int     baseSquareRadius;
+	private final boolean isChargeable;
 
-    public DowsingRod(String parNamePrefix, Block parForcedTargetBlock, int parMaxDamage, int parSquareRadius)
+    public DowsingRod(String parNamePrefix, Block parForcedTargetBlock, int parMaxDamage, int parSquareRadius, boolean parIsChargeable)
     {
         super();
 		setUnlocalizedName(Reference.MODID + "_" + parNamePrefix + BASE_NAME);
@@ -41,6 +44,7 @@ public class DowsingRod extends Item
         
         forcedTargetBlock = parForcedTargetBlock;
         baseSquareRadius  = parSquareRadius;
+        isChargeable      = parIsChargeable;
     }
     
     private void initNBT(ItemStack stack)
@@ -86,6 +90,9 @@ public class DowsingRod extends Item
     	list.add("inside a size " + (1+2*getSquareRadius(stack)) + " cube around you.");
     	if (forcedTargetBlock == null) {
     		list.add("Shift-right-click to change target block.");
+    	}
+    	if (isChargeable) {
+    		list.add("Charge with RF to repair.");
     	}
     }
     
@@ -147,6 +154,11 @@ public class DowsingRod extends Item
     	}
     }
     
+    private boolean nameIsOre(String name)
+    {
+    	return name.startsWith("ore"); // is there a better way?
+    }
+
     public boolean blockMatches(ItemStack stack, ItemStack world_stack)
     {
     	ItemStack target_stack = getTargetStack(stack);
@@ -172,9 +184,8 @@ public class DowsingRod extends Item
     	
     	// detect any ore
         for (int id : OreDictionary.getOreIDs(world_stack)) {
-        	String name = OreDictionary.getOreName(id);
-        	if (name.startsWith("ore")) { // XXX better way?
-        			return true;
+        	if (nameIsOre(OreDictionary.getOreName(id))) {
+        		return true;
         	}
         }
         return false;
@@ -204,4 +215,50 @@ public class DowsingRod extends Item
     	}
     }
     
+    // ---------------------------------------------------------------------
+    
+    @Override
+	public int receiveEnergy(ItemStack container, int maxReceive, boolean simulate)
+	{
+    	if (!isChargeable) {
+    		return 0;
+    	}
+
+    	int cur_damage    = container.getItemDamage();
+    	int energy_wanted = cur_damage * RF_PER_DAMAGE;
+    	int energy_taken  = Math.min(energy_wanted, maxReceive);
+    	int damage_healed = energy_taken / RF_PER_DAMAGE;
+    	energy_taken = damage_healed * RF_PER_DAMAGE; // adjust for maxReceive % RF_PER_DAMAGE != 0
+
+    	if (!simulate) {
+    		container.setItemDamage(cur_damage - damage_healed);
+    	}
+    	//System.out.println("max energy=" + maxReceive
+    	//		+ " energy_taken=" + energy_taken
+    	//		+ " damage_healed=" + damage_healed);
+    	return energy_taken;
+	}
+	
+	@Override
+	public int extractEnergy(ItemStack container, int maxExtract, boolean simulate)
+	{
+		return 0;
+	}
+	
+	@Override
+	public int getEnergyStored(ItemStack container)
+	{
+		return 0;
+	}
+
+	@Override
+	public int getMaxEnergyStored(ItemStack container)
+	{
+		// Energetic Infuser won't keep offering energy if this is 0
+		return isChargeable
+				? container.getItemDamage() * RF_PER_DAMAGE
+				: 0;
+				
+	}
+
 }

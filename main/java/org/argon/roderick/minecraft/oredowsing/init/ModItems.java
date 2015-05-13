@@ -12,10 +12,10 @@ import net.minecraft.item.ItemStack;
 public class ModItems extends Item
 {
 
-	public static Item    woodDowsingRod = new DowsingRod("Wood",    Blocks.iron_ore,      50, 4);
-	public static Item    ironDowsingRod = new DowsingRod("Iron",    Blocks.gold_ore,     100, 6);
-	public static Item    goldDowsingRod = new DowsingRod("Gold",    Blocks.diamond_ore,  100, 8);
-	public static Item diamondDowsingRod = new DowsingRod("Diamond", null,               1000, 8);
+	public static Item    woodDowsingRod = new DowsingRod("Wood",    Blocks.iron_ore,      50, 4, false);
+	public static Item    ironDowsingRod = new DowsingRod("Iron",    Blocks.gold_ore,     100, 6, false);
+	public static Item    goldDowsingRod = new DowsingRod("Gold",    Blocks.diamond_ore,  100, 8, false);
+	public static Item diamondDowsingRod = new DowsingRod("Diamond", null,               1000, 8, true);
     
     public static void init()
     {

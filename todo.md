@@ -6,7 +6,6 @@ Plans/to do:
   for its outline
     - investigate cofh.lib.util.getBlockTextureColor()
 - improvements for diamond dowsing rod
-    - charge with RF
     - improved searching/filtering
         - whitelist, blacklist
         - use/ignore ore dictionary, metadata, NBT
