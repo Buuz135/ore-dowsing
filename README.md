@@ -5,8 +5,11 @@ This Minecraft mod provides items called Dowsing Rods which can help find ores
 and other blocks.  See [the wiki](https://github.com/rosche/ore-dowsing/wiki)
 for more details.
 
-- Minecraft version: 1.7.10
-- Forge version: 1291
+Requirements:
+
+- Minecraft, version 1.7.10
+- [Minecraft Forge](http://files.minecraftforge.net/), version 10.13.2.1291
+- [CoFHLib](http://minecraft.curseforge.com/mc-mods/220333-cofhlib), version 1.0.2-160
 
 [Wiki](https://github.com/rosche/ore-dowsing/wiki)
 ======
