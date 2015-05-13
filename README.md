@@ -11,6 +11,9 @@ Requirements:
 - [Minecraft Forge](http://files.minecraftforge.net/), version 10.13.2.1291
 - [CoFHLib](http://minecraft.curseforge.com/mc-mods/220333-cofhlib), version 1.0.2-160
 
+[Download](https://github.com/rosche/ore-dowsing/releases/tag/v0.1)
+==========
+
 [Wiki](https://github.com/rosche/ore-dowsing/wiki)
 ======
 
