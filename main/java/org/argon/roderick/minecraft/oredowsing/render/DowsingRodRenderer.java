@@ -44,7 +44,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 //import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 
 public final class DowsingRodRenderer {
-	private final static int TICKS_PER_SEC = 20; // XXX get from elsewhere
+	private final static int TICKS_PER_SEC = 20; // is this available somewhere?
 	private static Hashtable blocksToHighlight = new Hashtable();
 
 	private static int getTickCounter() {
@@ -97,6 +97,7 @@ public final class DowsingRodRenderer {
 
         	if (blockToHighlight.renderUntilTick < tick
         			// XXX better way?  does this even work?
+        			// XXX definitely doesn't work if you switch to a new save game and are in same dimension!
         			|| blockToHighlight.world.provider.dimensionId != Minecraft.getMinecraft().theWorld.provider.dimensionId
         			// XXX handle any replacement rather than just air
         			|| block == Blocks.air
