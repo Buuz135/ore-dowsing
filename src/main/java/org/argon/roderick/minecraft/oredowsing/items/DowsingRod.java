@@ -7,6 +7,7 @@ import org.argon.roderick.minecraft.oredowsing.render.DowsingRodRenderer;
 import org.lwjgl.input.Keyboard;
 
 import cofh.api.energy.IEnergyContainerItem;
+import cpw.mods.fml.common.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,6 +19,7 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 
+@Optional.Interface(modid = "CoFHAPI|energy", iface = "cofh.api.energy.IEnergyContainerItem")
 public class DowsingRod extends Item implements IEnergyContainerItem
 {
 	private static final String BASE_NAME       = "DowsingRod";              
