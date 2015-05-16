@@ -7,6 +7,8 @@ import org.argon.roderick.minecraft.oredowsing.render.DowsingRodRenderer;
 import org.lwjgl.input.Keyboard;
 
 import cofh.api.energy.IEnergyContainerItem;
+import cofh.lib.inventory.ComparableItemStackSafe;
+import cofh.lib.util.helpers.ItemHelper;
 import cpw.mods.fml.common.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -17,7 +19,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.OreDictionary;
 
 @Optional.Interface(modid = "CoFHAPI|energy", iface = "cofh.api.energy.IEnergyContainerItem")
 public class DowsingRod extends Item implements IEnergyContainerItem
@@ -156,41 +157,13 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     	}
     }
     
-    private boolean nameIsOre(String name)
+    public boolean blockMatches(ComparableItemStackSafe comp_target_stack, ItemStack world_stack)
     {
-    	return name.startsWith("ore"); // is there a better way?
-    }
-
-    public boolean blockMatches(ItemStack stack, ItemStack world_stack)
-    {
-    	ItemStack target_stack = getTargetStack(stack);
-    	int[] target_ore_ids = OreDictionary.getOreIDs(target_stack);
-
-    	// detect specific block, but use ore dictionary
-    	if (target_ore_ids.length > 0) {
-    		int[] world_ore_ids = OreDictionary.getOreIDs(world_stack);
-    		for (int targ_id : target_ore_ids) {
-    			for (int world_id : world_ore_ids) {
-    				if (targ_id == world_id) {
-    					return true;
-    				}
-    			}
-    		}
-    		return false;
-    	}
-    	
-    	// detect specific block, no ore dictionary
-    	else if (target_stack != null) {
-    		return OreDictionary.itemMatches(world_stack, target_stack, true);
-    	}
-    	
-    	// detect any ore
-        for (int id : OreDictionary.getOreIDs(world_stack)) {
-        	if (nameIsOre(OreDictionary.getOreName(id))) {
-        		return true;
-        	}
-        }
-        return false;
+    	return (comp_target_stack != null)
+    			// detect specific block
+    			? comp_target_stack.isItemEqual(new ComparableItemStackSafe(world_stack))
+    			// detect any ore
+    			: ItemHelper.isOre(world_stack);
     }
 
     public void divine(ItemStack stack, World world, EntityPlayer player)
@@ -200,15 +173,19 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     	if (!world.isRemote)
     		return;
     	
+    	ItemStack target_stack = getTargetStack(stack);
+        ComparableItemStackSafe comp_target_stack = (target_stack != null)
+        		? (new ComparableItemStackSafe(target_stack))
+        		: null;
     	int r = getSquareRadius(stack);
     	int ct = 0;
         int x, y, z;
     	for (x = (int)player.posX - r; x <= player.posX + r; x++) {
     		for (y = (int)player.posY - r; y <= player.posY + r; y++) {
     			for (z = (int)player.posZ - r; z <= player.posZ + r; z++) {
-    				if (blockMatches(stack,
-    						new ItemStack(world.getBlock(x, y, z), 1,
-    								world.getBlockMetadata(x, y, z)))) {
+    				if (blockMatches(comp_target_stack,
+    								new ItemStack(world.getBlock(x, y, z), 1,
+    										world.getBlockMetadata(x, y, z)))) {
     					ct++;
     					DowsingRodRenderer.addBlockToHighlight(new ChunkCoordinates(x, y, z), world, player, RENDER_DURATION);
     				}
