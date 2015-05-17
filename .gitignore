@@ -1,1 +1,11 @@
-.DS_Store
+.*
+*~
+CREDITS-fml.txt
+LICENSE-fml.txt
+MinecraftForge-Credits.txt
+MinecraftForge-License.txt
+README.txt
+bin
+eclipse
+forge-*-changelog.txt
+libs
