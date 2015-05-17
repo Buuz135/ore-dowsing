@@ -90,13 +90,16 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     	}
 
     	ItemStack target_stack = getTargetStack(stack);
-    	list.add("Right-click to highlight " + (target_stack != null ? target_stack.getDisplayName() : "ores"));
-    	list.add("inside a size " + (1+2*getSquareRadius(stack)) + " cube around you.");
+        list.add(String.format(StringHelper.localize("text.oredowsing.tooltip.0"),
+                        (target_stack != null ? target_stack.getDisplayName()
+                        	: StringHelper.localize("text.oredowsing.all_ores"))));
+        list.add(String.format(StringHelper.localize("text.oredowsing.tooltip.1"),
+                        1+2*getSquareRadius(stack)));
     	if (forcedTargetBlock == null) {
-    		list.add("Shift-right-click to change target block.");
+            list.add(StringHelper.localize("text.oredowsing.tooltip.2"));
     	}
     	if (isChargeable) {
-    		list.add("Charge with RF to repair.");
+            list.add(StringHelper.localize("text.oredowsing.tooltip.3"));
     	}
     }
     
@@ -130,7 +133,8 @@ public class DowsingRod extends Item implements IEnergyContainerItem
 	{
 		if (forcedTargetBlock != null) {
 			if (player != null) {
-				player.addChatMessage(new ChatComponentText("This item doesn't allow changing the target block"));
+				player.addChatMessage(new ChatComponentText(
+    				    StringHelper.localize("text.oredowsing.change_target.no")));
 			}
 			return;
 		}
@@ -146,10 +150,11 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         		targetBlock == null ? 0 : Block.getIdFromBlock(targetBlock));
         stack.stackTagCompound.setInteger(NBT_TARGET_BLOCK_METADATA, metadata);
     	if (player != null) {
-    		player.addChatMessage(new ChatComponentText("Target set to "
-    				+ (targetBlock == null
-    					? "all ores"
-    					: new ItemStack(targetBlock, 1, metadata).getDisplayName())));
+    		player.addChatMessage(new ChatComponentText(String.format(
+    				StringHelper.localize("text.oredowsing.change_target.yes"),
+    				(targetBlock == null
+    					? StringHelper.localize("text.oredowsing.all_ores")
+    					: new ItemStack(targetBlock, 1, metadata).getDisplayName()))));
     	}
     }
     
