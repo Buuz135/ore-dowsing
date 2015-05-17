@@ -1,8 +1,7 @@
 release checklist
 =================
 - README.md: update requirement versions
-- update mod version in Reference.java
-- need to update build.gradle?
+- update mod version in Reference.java, build.gradle
 - edit changelog.md, update version, date
 - git commit
 - git tag
