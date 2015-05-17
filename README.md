@@ -17,6 +17,9 @@ Requirements
 [Download](https://github.com/rosche/ore-dowsing/releases/latest)
 ==========
 
+[Screen Shots](https://github.com/rosche/ore-dowsing/wiki/screen-shots)
+==============
+
 [Wiki](https://github.com/rosche/ore-dowsing/wiki)
 ======
 
