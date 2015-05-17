@@ -35,17 +35,51 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 
 import org.lwjgl.opengl.GL11;
 
-//import vazkii.botania.api.BotaniaAPI;
-//import vazkii.botania.api.item.IExtendedWireframeCoordinateListProvider;
-//import vazkii.botania.api.item.IWireframeCoordinateListProvider;
-//import vazkii.botania.api.wand.ICoordBoundItem;
-//import vazkii.botania.api.wand.IWireframeAABBProvider;
+import cofh.lib.util.helpers.ItemHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-//import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 
 public final class DowsingRodRenderer {
 	private final static int TICKS_PER_SEC = 20; // is this available somewhere?
 	private static Hashtable blocksToHighlight = new Hashtable();
+
+	private static Hashtable blockColor = new Hashtable();
+	static {
+
+        // vanilla
+
+		blockColor.put("oreCoal",           new Color(0x333333).getRGB());
+		blockColor.put("oreDiamond",        new Color(0x6ae7ea).getRGB());
+		blockColor.put("oreEmerald",        new Color(0x21761e).getRGB());
+		blockColor.put("oreGold",           new Color(0x958e06).getRGB());
+		blockColor.put("oreIron",           new Color(0xD3AD8D).getRGB());
+		blockColor.put("oreLapis",          new Color(0x2c3ba6).getRGB());
+		blockColor.put("oreQuartz",         new Color(0xaf9d90).getRGB());
+		blockColor.put("oreRedstone",       new Color(0xa20600).getRGB());
+
+		// Thaumcraft
+
+		blockColor.put("oreAmber",          new Color(0xB88100).getRGB());
+		blockColor.put("oreCinnabar",       new Color(0x470100).getRGB());
+		blockColor.put("oreInfusedAir",     new Color(0x837E26).getRGB());
+		blockColor.put("oreInfusedFire",    new Color(0x852000).getRGB());
+		blockColor.put("oreInfusedWater",   new Color(0x094C76).getRGB());
+		blockColor.put("oreInfusedEarth",   new Color(0x104E00).getRGB());
+		blockColor.put("oreInfusedOrder",   new Color(0x786268).getRGB());
+		blockColor.put("oreInfusedEntropy", new Color(0x2D2B34).getRGB());
+
+		// other mods
+
+		blockColor.put("oreCertusQuartz",   new Color(0x87A4C3).getRGB());
+		blockColor.put("oreCopper",         new Color(0x8C4900).getRGB());
+		blockColor.put("oreLead",           new Color(0x5E6B98).getRGB());
+		blockColor.put("oreMithril",        new Color(0x549298).getRGB());
+		blockColor.put("oreNickel",         new Color(0xA3A27D).getRGB());
+		blockColor.put("oreOsmium",         new Color(0x435E7D).getRGB());
+		blockColor.put("orePlatinum",       new Color(0x1F609B).getRGB());
+		blockColor.put("oreSilver",         new Color(0xA5B8BF).getRGB());
+		blockColor.put("oreTin",            new Color(0x97B7DC).getRGB());
+
+	}
 
 	private static int getTickCounter() {
 		return MinecraftServer.getServer().getTickCounter();
@@ -56,12 +90,25 @@ public final class DowsingRodRenderer {
             World world;
             EntityPlayer player;
             int renderUntilTick;
+            int rgb;
             
             public BlockToHighlight(ChunkCoordinates parPos, World parWorld, EntityPlayer parPlayer, int parRenderUntilTick) {
             	pos = parPos;
             	world = parWorld;
             	player = parPlayer;
             	renderUntilTick = parRenderUntilTick;
+
+                Block block = world.getBlock(pos.posX, pos.posY, pos.posZ);
+                int metadata = world.getBlockMetadata(pos.posX, pos.posY, pos.posZ);
+                String ore_name = ItemHelper.getOreName(new ItemStack(block, 1, metadata));
+                if (blockColor.containsKey(ore_name)) {
+                    rgb = (Integer) blockColor.get(ore_name);
+                }
+                else {
+                    rgb = -1;
+                    System.out.println("no color for " + ore_name + " from " + block);
+                }
+
             }
 	}
 
@@ -87,7 +134,7 @@ public final class DowsingRodRenderer {
 		Tessellator.renderingWorldRenderer = false;
 
 		int tick = getTickCounter();
-		int color = Color.HSBtoRGB(tick % 200 / 200F, 0.6F, 1F);
+		int dyn_rgb = Color.HSBtoRGB(tick % 200 / 200F, 0.6F, 1F);
 
         Enumeration e = blocksToHighlight.keys();
         while (e.hasMoreElements()) {
@@ -105,7 +152,7 @@ public final class DowsingRodRenderer {
         		blocksToHighlight.remove(blockToHighlight.pos);
         	}
         	else {
-        		renderBlockOutlineAt(blockToHighlight.pos, color);
+                renderBlockOutlineAt(blockToHighlight.pos, blockToHighlight.rgb != -1 ? blockToHighlight.rgb : dyn_rgb);
         	}
         }
 
