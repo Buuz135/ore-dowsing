@@ -9,6 +9,7 @@ import org.lwjgl.input.Keyboard;
 import cofh.api.energy.IEnergyContainerItem;
 import cofh.lib.inventory.ComparableItemStackSafe;
 import cofh.lib.util.helpers.ItemHelper;
+import cofh.lib.util.helpers.StringHelper;
 import cpw.mods.fml.common.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -99,15 +100,10 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     	}
     }
     
-    private boolean isShifted()
-    {
-    	return Keyboard.isKeyDown(Keyboard.KEY_RSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-    }
-    
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
     {
-    	if (isShifted()) {
+        if (StringHelper.isShiftKeyDown()) {
     		setTarget(stack, null, 0, world.isRemote ? null : player);
     	}
     	else {
@@ -119,7 +115,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
     {
-    	if (isShifted()) {
+        if (StringHelper.isShiftKeyDown()) {
     		setTarget(stack, world.getBlock(x, y, z),
     				world.getBlockMetadata(x, y, z),
     				world.isRemote ? null : player);
