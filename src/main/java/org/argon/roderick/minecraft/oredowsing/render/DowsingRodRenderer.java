@@ -106,7 +106,7 @@ public final class DowsingRodRenderer {
                 }
                 else {
                     rgb = -1;
-                    System.out.println("no color for " + ore_name + " from " + block);
+                    //System.out.println("no color for " + ore_name + " from " + block);
                 }
 
             }
