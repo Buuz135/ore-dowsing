@@ -23,10 +23,10 @@ Requirements
 [Wiki](https://github.com/rosche/ore-dowsing/wiki)
 ======
 
-[Change log](https://github.com/rosche/ore-dowsing/blob/master/changelog.md)
+[Change log](https://github.com/rosche/ore-dowsing/blob/master/Changelog.md)
 ============
 
-[Plans](https://github.com/rosche/ore-dowsing/blob/master/todo.md)
+[Plans](https://github.com/rosche/ore-dowsing/blob/master/Todo.md)
 =======
 
 Thanks
