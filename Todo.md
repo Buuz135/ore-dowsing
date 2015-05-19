@@ -1,8 +1,7 @@
 Plans/to do:
 ============
 
-- rename github repository to OreDowsing?
-- add colors for nether ores
+- rename github and local repositories to OreDowsing?
 - add screenshot using it to highlight a pipe system
 - sound when finding something?  (only in auto-scan mode?)
 - better sprites (help appreciated!)

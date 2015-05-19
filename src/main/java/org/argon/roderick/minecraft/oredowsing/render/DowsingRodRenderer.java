@@ -45,38 +45,43 @@ public final class DowsingRodRenderer {
 
         // vanilla
 
-        blockColor.put("oreCoal",           new Color(0x333333).getRGB());
-        blockColor.put("oreDiamond",        new Color(0x6ae7ea).getRGB());
-        blockColor.put("oreEmerald",        new Color(0x21761e).getRGB());
-        blockColor.put("oreGold",           new Color(0x958e06).getRGB());
-        blockColor.put("oreIron",           new Color(0xD3AD8D).getRGB());
-        blockColor.put("oreLapis",          new Color(0x2c3ba6).getRGB());
-        blockColor.put("oreQuartz",         new Color(0xaf9d90).getRGB());
-        blockColor.put("oreRedstone",       new Color(0xa20600).getRGB());
+        addOre("Coal",           0x333333);
+        addOre("Diamond",        0x6ae7ea);
+        addOre("Emerald",        0x21761e);
+        addOre("Gold",           0x958e06);
+        addOre("Iron",           0xD3AD8D);
+        addOre("Lapis",          0x2c3ba6);
+        addOre("Quartz",         0xaf9d90);
+        addOre("Redstone",       0xa20600);
 
         // Thaumcraft
 
-        blockColor.put("oreAmber",          new Color(0xB88100).getRGB());
-        blockColor.put("oreCinnabar",       new Color(0x470100).getRGB());
-        blockColor.put("oreInfusedAir",     new Color(0x837E26).getRGB());
-        blockColor.put("oreInfusedFire",    new Color(0x852000).getRGB());
-        blockColor.put("oreInfusedWater",   new Color(0x094C76).getRGB());
-        blockColor.put("oreInfusedEarth",   new Color(0x104E00).getRGB());
-        blockColor.put("oreInfusedOrder",   new Color(0x786268).getRGB());
-        blockColor.put("oreInfusedEntropy", new Color(0x2D2B34).getRGB());
+        addOre("Amber",          0xB88100);
+        addOre("Cinnabar",       0x470100);
+        addOre("InfusedAir",     0x837E26);
+        addOre("InfusedFire",    0x852000);
+        addOre("InfusedWater",   0x094C76);
+        addOre("InfusedEarth",   0x104E00);
+        addOre("InfusedOrder",   0x786268);
+        addOre("InfusedEntropy", 0x2D2B34);
 
         // other mods
 
-        blockColor.put("oreCertusQuartz",   new Color(0x87A4C3).getRGB());
-        blockColor.put("oreCopper",         new Color(0x8C4900).getRGB());
-        blockColor.put("oreLead",           new Color(0x5E6B98).getRGB());
-        blockColor.put("oreMithril",        new Color(0x549298).getRGB());
-        blockColor.put("oreNickel",         new Color(0xA3A27D).getRGB());
-        blockColor.put("oreOsmium",         new Color(0x435E7D).getRGB());
-        blockColor.put("orePlatinum",       new Color(0x1F609B).getRGB());
-        blockColor.put("oreSilver",         new Color(0xA5B8BF).getRGB());
-        blockColor.put("oreTin",            new Color(0x97B7DC).getRGB());
+        addOre("CertusQuartz",   0x87A4C3);
+        addOre("Copper",         0x8C4900);
+        addOre("Lead",           0x5E6B98);
+        addOre("Mithril",        0x549298);
+        addOre("Nickel",         0xA3A27D);
+        addOre("Osmium",         0x435E7D);
+        addOre("Platinum",       0x1F609B);
+        addOre("Silver",         0xA5B8BE);
+        addOre("Tin",            0x97B7DB);
 
+    }
+
+    private static void addOre(String baseName, int rgb) {
+        blockColor.put("ore"       + baseName, rgb);
+        blockColor.put("oreNether" + baseName, rgb);
     }
 
     private static int getTickCounter() {
