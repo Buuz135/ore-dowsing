@@ -24,10 +24,10 @@ archivesBaseName = "OreDowsing"
 minecraft {
     version = "1.7.10-10.13.2.1291"
     if (file('../run').exists()) {
-	runDir = '../run'
+        runDir = '../run'
     }
     else {
-	runDir = "eclipse"
+        runDir = "eclipse"
     }
 }
 
