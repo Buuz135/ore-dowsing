@@ -1,6 +1,7 @@
 Plans/to do:
 ============
 
+- rename github repository to OreDowsing?
 - add colors for nether ores
 - add screenshot using it to highlight a pipe system
 - sound when finding something?  (only in auto-scan mode?)
@@ -12,3 +13,4 @@ Plans/to do:
         - multiple targets
     - upgrades to expand range
     - auto-scan mode
+- sound stopped working when migrated to forge/ore-dowsing
