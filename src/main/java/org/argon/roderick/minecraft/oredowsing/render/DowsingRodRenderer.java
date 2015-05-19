@@ -17,7 +17,6 @@ package org.argon.roderick.minecraft.oredowsing.render;
 import java.awt.Color;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -25,7 +24,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
@@ -40,9 +38,9 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public final class DowsingRodRenderer {
 	private final static int TICKS_PER_SEC = 20; // is this available somewhere?
-	private static Hashtable blocksToHighlight = new Hashtable();
+	private static Hashtable<ChunkCoordinates, BlockToHighlight> blocksToHighlight = new Hashtable<ChunkCoordinates, BlockToHighlight>();
 
-	private static Hashtable blockColor = new Hashtable();
+	private static Hashtable<String, Integer> blockColor = new Hashtable<String, Integer>();
 	static {
 
         // vanilla
@@ -88,14 +86,12 @@ public final class DowsingRodRenderer {
 	private static class BlockToHighlight {
             ChunkCoordinates pos;
             World world;
-            EntityPlayer player;
             int renderUntilTick;
             int rgb;
             
-            public BlockToHighlight(ChunkCoordinates parPos, World parWorld, EntityPlayer parPlayer, int parRenderUntilTick) {
+            public BlockToHighlight(ChunkCoordinates parPos, World parWorld, int parRenderUntilTick) {
             	pos = parPos;
             	world = parWorld;
-            	player = parPlayer;
             	renderUntilTick = parRenderUntilTick;
 
                 Block block = world.getBlock(pos.posX, pos.posY, pos.posZ);
@@ -114,7 +110,7 @@ public final class DowsingRodRenderer {
 
     public static void addBlockToHighlight(ChunkCoordinates parPos, World parWorld, EntityPlayer parPlayer, float parRenderDuration) {
     	blocksToHighlight.put(parPos,
-    			new DowsingRodRenderer.BlockToHighlight(parPos, parWorld, parPlayer,
+    			new DowsingRodRenderer.BlockToHighlight(parPos, parWorld,
     						getTickCounter() + Math.round(TICKS_PER_SEC * parRenderDuration)
     					)
     	);
@@ -136,10 +132,10 @@ public final class DowsingRodRenderer {
 		int tick = getTickCounter();
 		int dyn_rgb = Color.HSBtoRGB(tick % 200 / 200F, 0.6F, 1F);
 
-        Enumeration e = blocksToHighlight.keys();
+        Enumeration<ChunkCoordinates> e = blocksToHighlight.keys();
         while (e.hasMoreElements()) {
-        	ChunkCoordinates keyPos = (ChunkCoordinates) e.nextElement();
-        	BlockToHighlight blockToHighlight = (BlockToHighlight) blocksToHighlight.get(keyPos);
+        	ChunkCoordinates keyPos = e.nextElement();
+        	BlockToHighlight blockToHighlight = blocksToHighlight.get(keyPos);
             Block block = blockToHighlight.world.getBlock(blockToHighlight.pos.posX, blockToHighlight.pos.posY, blockToHighlight.pos.posZ);
 
         	if (blockToHighlight.renderUntilTick < tick

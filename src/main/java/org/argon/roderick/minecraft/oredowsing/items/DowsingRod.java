@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.argon.roderick.minecraft.oredowsing.lib.Reference;
 import org.argon.roderick.minecraft.oredowsing.render.DowsingRodRenderer;
-import org.lwjgl.input.Keyboard;
 
 import cofh.api.energy.IEnergyContainerItem;
 import cofh.lib.inventory.ComparableItemStackSafe;
@@ -82,7 +81,8 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     	return stack.stackTagCompound.getInteger(NBT_RADIUS);
     }
 
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
     {
     	if (stack.stackTagCompound == null) {
@@ -179,7 +179,6 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         		? (new ComparableItemStackSafe(target_stack))
         		: null;
     	int r = getSquareRadius(stack);
-    	int ct = 0;
         int x, y, z;
     	for (x = (int)player.posX - r; x <= player.posX + r; x++) {
     		for (y = (int)player.posY - r; y <= player.posY + r; y++) {
@@ -187,7 +186,6 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     				if (blockMatches(comp_target_stack,
     								new ItemStack(world.getBlock(x, y, z), 1,
     										world.getBlockMetadata(x, y, z)))) {
-    					ct++;
     					DowsingRodRenderer.addBlockToHighlight(new ChunkCoordinates(x, y, z), world, player, RENDER_DURATION);
     				}
     			}
