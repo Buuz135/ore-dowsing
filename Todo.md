@@ -1,6 +1,7 @@
 Plans/to do:
 ============
 
+- 1.8 support
 - rename github and local repositories to OreDowsing?
 - add screenshot using it to highlight a pipe system
 - sound when finding something?  (only in auto-scan mode?)
