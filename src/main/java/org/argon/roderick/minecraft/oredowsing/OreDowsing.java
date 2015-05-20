@@ -13,7 +13,7 @@ public class OreDowsing {
 
     @SidedProxy(clientSide="org.argon.roderick.minecraft.oredowsing.init.ClientProxy", serverSide="org.argon.roderick.minecraft.oredowsing.init.ServerProxy")
     public static CommonProxy proxy;
-    
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -22,13 +22,13 @@ public class OreDowsing {
         //ModBlocks.init();
         //ModTileEntities.init();
     }
-    
+
     @Mod.EventHandler
     public void Init(FMLInitializationEvent event)
     {
         proxy.init(event);
     }
-    
+
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event)
     {

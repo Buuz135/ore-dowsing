@@ -10,5 +10,5 @@ public class RegisterHelper
     {
         GameRegistry.registerItem(item, Reference.MODID + item.getUnlocalizedName().substring(5));
     }
-    
+
 }

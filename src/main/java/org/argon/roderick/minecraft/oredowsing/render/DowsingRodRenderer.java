@@ -6,10 +6,10 @@ package org.argon.roderick.minecraft.oredowsing.render;
  * This class was created by <Vazkii>. It's distributed as
  * part of the Botania Mod. Get the Source Code in github:
  * https://github.com/Vazkii/Botania
- * 
+ *
  * Botania is Open Source and distributed under the
  * Botania License: http://botaniamod.net/license.php
- * 
+ *
  * File Created @ [Mar 24, 2014, 7:02:37 PM (GMT)]
  */
 //package vazkii.botania.client.core.handler;
@@ -87,13 +87,13 @@ public final class DowsingRodRenderer {
     private static int getTickCounter() {
         return MinecraftServer.getServer().getTickCounter();
     }
-    
+
     private static class BlockToHighlight {
             ChunkCoordinates pos;
             World world;
             int renderUntilTick;
             int rgb;
-            
+
             public BlockToHighlight(ChunkCoordinates parPos, World parWorld, int parRenderUntilTick) {
                 pos = parPos;
                 world = parWorld;
