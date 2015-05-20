@@ -10,6 +10,9 @@ Plans/to do:
         - whitelist, blacklist
         - use/ignore ore dictionary, metadata, NBT
         - multiple targets
-    - upgrades to expand range
+    - upgrades
+        - NEI handling for upgrade recipes
+        - something in the recipe handler causing slowness when hovering over
+          rod in inventory?
     - auto-scan mode
 - sound stopped working when migrated to forge/ore-dowsing
