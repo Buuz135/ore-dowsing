@@ -2,6 +2,7 @@ Change Log
 ==========
 
 - version 0.3
+    - diamond dowsing rods' range can be upgraded with diamonds
     - add colors for nether ores
     - set up remaining localizations (no translations yet, alas)
 
