@@ -31,13 +31,13 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 
+import org.argon.roderick.minecraft.oredowsing.lib.Constants;
 import org.lwjgl.opengl.GL11;
 
 import cofh.lib.util.helpers.ItemHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public final class DowsingRodRenderer {
-    private final static int TICKS_PER_SEC = 20; // is this available somewhere?
     private static Hashtable<ChunkCoordinates, BlockToHighlight> blocksToHighlight = new Hashtable<ChunkCoordinates, BlockToHighlight>();
 
     private static Hashtable<String, Integer> blockColor = new Hashtable<String, Integer>();
@@ -116,7 +116,7 @@ public final class DowsingRodRenderer {
     public static void addBlockToHighlight(ChunkCoordinates parPos, World parWorld, EntityPlayer parPlayer, float parRenderDuration) {
         blocksToHighlight.put(parPos,
                 new DowsingRodRenderer.BlockToHighlight(parPos, parWorld,
-                            getTickCounter() + Math.round(TICKS_PER_SEC * parRenderDuration)
+                            getTickCounter() + Math.round(Constants.TICKS_PER_SEC * parRenderDuration)
                         )
         );
     }
