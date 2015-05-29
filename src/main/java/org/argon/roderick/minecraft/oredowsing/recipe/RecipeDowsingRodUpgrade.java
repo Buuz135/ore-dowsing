@@ -1,11 +1,9 @@
 package org.argon.roderick.minecraft.oredowsing.recipe;
 
 import org.argon.roderick.minecraft.oredowsing.items.DowsingRod;
-import org.argon.roderick.minecraft.oredowsing.lib.Helper;
 
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
@@ -31,7 +29,7 @@ public class RecipeDowsingRodUpgrade implements IRecipe {
                 if (stack == null) {
                     continue;
                 }
-                else if (Helper.isDowsingRod(stack)) {
+                else if (stack.getItem() instanceof DowsingRod) {
                     if (dowsingRodStack != null)
                         return false;
                     dowsingRodStack = stack;
