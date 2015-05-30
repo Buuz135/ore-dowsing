@@ -18,15 +18,14 @@ public class OreDowsing {
     public void preInit(FMLPreInitializationEvent event)
     {
         proxy.preInit(event);
-        ModItems.init();
-        //ModBlocks.init();
-        //ModTileEntities.init();
+        ModItems.preInit();
     }
 
     @Mod.EventHandler
     public void Init(FMLInitializationEvent event)
     {
         proxy.init(event);
+        ModItems.init();
     }
 
     @Mod.EventHandler

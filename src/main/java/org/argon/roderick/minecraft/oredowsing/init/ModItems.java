@@ -1,61 +1,59 @@
 package org.argon.roderick.minecraft.oredowsing.init;
 
+import java.util.ArrayList;
 import org.argon.roderick.minecraft.oredowsing.items.DowsingRod;
+import org.argon.roderick.minecraft.oredowsing.lib.Constants;
 import org.argon.roderick.minecraft.oredowsing.lib.RegisterHelper;
 import org.argon.roderick.minecraft.oredowsing.recipe.RecipeDowsingRodUpgrade;
 
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
 
-public class ModItems extends Item
+public class ModItems
 {
+    public static ArrayList<DowsingRod> dowsingRods = new ArrayList<DowsingRod>();
 
-    public static Item    woodDowsingRod = new DowsingRod("Wood",    Blocks.iron_ore,      50, 4, false, 0, 0);
-    public static Item    ironDowsingRod = new DowsingRod("Iron",    Blocks.gold_ore,     100, 6, false, 0, 0);
-    public static Item    goldDowsingRod = new DowsingRod("Gold",    Blocks.diamond_ore,  100, 8, false, 0, 0);
-    public static Item diamondDowsingRod = new DowsingRod("Diamond", null,               1000, 8, true,  4, 8);
+    public static DowsingRod    woodDowsingRod = createDowsingRod("Wood",    Items.stick,      Items.coal,                                        Blocks.iron_ore,      50, 4, false, 0, 0);
+    public static DowsingRod    ironDowsingRod = createDowsingRod("Iron",    Items.iron_ingot, Items.redstone,                                    Blocks.gold_ore,     100, 6, false, 0, 0);
+    public static DowsingRod    goldDowsingRod = createDowsingRod("Gold",    Items.gold_ingot, new ItemStack(Items.dye, 1, Constants.META_LAPIS), Blocks.diamond_ore,  100, 8, false, 0, 0);
+    public static DowsingRod diamondDowsingRod = createDowsingRod("Diamond", Items.diamond,    Items.emerald,                                     null,               1000, 8, true,  4, 8);
+
+    public static DowsingRod createDowsingRod(String parNamePrefix, 
+            Object parIngredientBase, Object parIngredientTop,
+            Block parForcedTargetBlock,
+            int parMaxDamage, int parSquareRadius, boolean parIsChargeable,
+            int parDiamondsPerUpgrade, int parMaxUpgrades)
+    {
+        DowsingRod rod = new DowsingRod(parNamePrefix,
+                parIngredientBase, parIngredientTop,
+                parForcedTargetBlock,
+                parMaxDamage, parSquareRadius, parIsChargeable,
+                parDiamondsPerUpgrade, parMaxUpgrades);
+        dowsingRods.add(rod);
+        return rod;
+    }
+
+    public static void preInit()
+    {
+        for (DowsingRod rod : dowsingRods) {
+            RegisterHelper.registerItem(rod);
+        }
+    }
 
     public static void init()
     {
-        RegisterHelper.registerItem(woodDowsingRod);
-        GameRegistry.addRecipe(
-                new ItemStack(woodDowsingRod),
-                " y ",
-                "xxx",
-                "x x",
-                'x', new ItemStack(Items.stick),
-                'y', new ItemStack(Items.coal));
-
-        RegisterHelper.registerItem(ironDowsingRod);
-        GameRegistry.addRecipe(
-                new ItemStack(ironDowsingRod),
-                " y ",
-                "xxx",
-                "x x",
-                'x', new ItemStack(Items.iron_ingot),
-                'y', new ItemStack(Items.redstone));
-
-        RegisterHelper.registerItem(goldDowsingRod);
-        GameRegistry.addRecipe(
-                new ItemStack(goldDowsingRod),
-                " y ",
-                "xxx",
-                "x x",
-                'x', new ItemStack(Items.gold_ingot),
-                'y', new ItemStack(Items.dye, 1, 4)); // XXX constant for 4?
-
-        RegisterHelper.registerItem(diamondDowsingRod);
-        GameRegistry.addRecipe(
-                new ItemStack(diamondDowsingRod),
-                " y ",
-                "xxx",
-                "x x",
-                'x', new ItemStack(Items.diamond),
-                'y', new ItemStack(Items.emerald));
+        for (DowsingRod rod : dowsingRods) {
+            GameRegistry.addRecipe(
+                   new ItemStack(rod),
+                   " y ",
+                   "xxx",
+                   "x x",
+                   'x', rod.ingredientBase,
+                   'y', rod.ingredientTop);
+        }
 
         GameRegistry.addRecipe(new RecipeDowsingRodUpgrade());
     }
