@@ -84,6 +84,11 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         return true;
     }
 
+    public boolean addUpgrade(ItemStack stack)
+    {
+        return this.addUpgrade(stack, 1);
+    }
+
     public int getDiamondsPerUpgrade()
     {
         return diamondsPerUpgrade;
@@ -100,6 +105,14 @@ public class DowsingRod extends Item implements IEnergyContainerItem
             initNBT(stack);
         }
         return stack.stackTagCompound.getInteger(NBT_NUM_UPGRADES);
+    }
+
+    public boolean canUpgrade(ItemStack stack)
+    {
+        if (stack.stackTagCompound == null) {
+            initNBT(stack);
+        }
+        return this.getNumUpgrades(stack) < this.getMaxUpgrades();
     }
 
     public ItemStack getTargetStack(ItemStack stack)
