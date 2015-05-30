@@ -38,8 +38,12 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     private final boolean isChargeable;
     private final int     diamondsPerUpgrade;
     private final int     maxUpgrades;
+    public  final Object  ingredientBase;
+    public  final Object  ingredientTop;
 
-    public DowsingRod(String parNamePrefix, Block parForcedTargetBlock,
+    public DowsingRod(String parNamePrefix,
+            Object parIngredientBase, Object parIngredientTop,
+            Block parForcedTargetBlock,
             int parMaxDamage, int parSquareRadius, boolean parIsChargeable,
             int parDiamondsPerUpgrade, int parMaxUpgrades)
     {
@@ -55,6 +59,8 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         isChargeable       = parIsChargeable;
         diamondsPerUpgrade = parDiamondsPerUpgrade;
         maxUpgrades        = parMaxUpgrades;
+        ingredientBase     = parIngredientBase;
+        ingredientTop      = parIngredientTop;
     }
 
     private void initNBT(ItemStack stack)
