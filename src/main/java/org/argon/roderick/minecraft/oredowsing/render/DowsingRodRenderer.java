@@ -45,43 +45,47 @@ public final class DowsingRodRenderer {
 
         // vanilla
 
-        addOre("Coal",           0x333333);
-        addOre("Diamond",        0x6ae7ea);
-        addOre("Emerald",        0x21761e);
-        addOre("Gold",           0x958e06);
-        addOre("Iron",           0xD3AD8D);
-        addOre("Lapis",          0x2c3ba6);
-        addOre("Quartz",         0xaf9d90);
-        addOre("Redstone",       0xa20600);
+        addOreColorWithNether("Coal",           0x333333);
+        addOreColorWithNether("Diamond",        0x6ae7ea);
+        addOreColorWithNether("Emerald",        0x21761e);
+        addOreColorWithNether("Gold",           0x958e06);
+        addOreColorWithNether("Iron",           0xD3AD8D);
+        addOreColorWithNether("Lapis",          0x2c3ba6);
+        addOreColorWithNether("Quartz",         0xaf9d90);
+        addOreColorWithNether("Redstone",       0xa20600);
 
         // Thaumcraft
 
-        addOre("Amber",          0xB88100);
-        addOre("Cinnabar",       0x470100);
-        addOre("InfusedAir",     0x837E26);
-        addOre("InfusedFire",    0x852000);
-        addOre("InfusedWater",   0x094C76);
-        addOre("InfusedEarth",   0x104E00);
-        addOre("InfusedOrder",   0x786268);
-        addOre("InfusedEntropy", 0x2D2B34);
+        addOreColorWithNether("Amber",          0xB88100);
+        addOreColorWithNether("Cinnabar",       0x470100);
+        addOreColorWithNether("InfusedAir",     0x837E26);
+        addOreColorWithNether("InfusedFire",    0x852000);
+        addOreColorWithNether("InfusedWater",   0x094C76);
+        addOreColorWithNether("InfusedEarth",   0x104E00);
+        addOreColorWithNether("InfusedOrder",   0x786268);
+        addOreColorWithNether("InfusedEntropy", 0x2D2B34);
 
         // other mods
 
-        addOre("CertusQuartz",   0x87A4C3);
-        addOre("Copper",         0x8C4900);
-        addOre("Lead",           0x5E6B98);
-        addOre("Mithril",        0x549298);
-        addOre("Nickel",         0xA3A27D);
-        addOre("Osmium",         0x435E7D);
-        addOre("Platinum",       0x1F609B);
-        addOre("Silver",         0xA5B8BE);
-        addOre("Tin",            0x97B7DB);
+        addOreColorWithNether("CertusQuartz",   0x87A4C3);
+        addOreColorWithNether("Copper",         0x8C4900);
+        addOreColorWithNether("Lead",           0x5E6B98);
+        addOreColorWithNether("Mithril",        0x549298);
+        addOreColorWithNether("Nickel",         0xA3A27D);
+        addOreColorWithNether("Osmium",         0x435E7D);
+        addOreColorWithNether("Platinum",       0x1F609B);
+        addOreColorWithNether("Silver",         0xA5B8BE);
+        addOreColorWithNether("Tin",            0x97B7DB);
 
     }
 
-    private static void addOre(String baseName, int rgb) {
-        blockColor.put("ore"       + baseName, rgb);
-        blockColor.put("oreNether" + baseName, rgb);
+    public static void addOreColorWithNether(String baseName, int rgb) {
+        addOreColor("ore"       + baseName, rgb);
+        addOreColor("oreNether" + baseName, rgb);
+    }
+
+    public static void addOreColor(String name, int rgb) {
+        blockColor.put(name, rgb);
     }
 
     private static int getTickCounter() {
