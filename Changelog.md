@@ -1,8 +1,8 @@
 Change Log
 ==========
 
-- version 0.4  WIP
-
+- version 0.4  2015-09-07
+    - oops, correct crash on client in multiplayer
 
 - version 0.3  2015-05-29
     - diamond dowsing rods' range can be upgraded with diamonds
