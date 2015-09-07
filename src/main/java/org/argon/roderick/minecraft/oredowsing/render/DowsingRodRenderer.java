@@ -25,7 +25,6 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
@@ -88,20 +87,16 @@ public final class DowsingRodRenderer {
         blockColor.put(name, rgb);
     }
 
-    private static int getTickCounter() {
-        return MinecraftServer.getServer().getTickCounter();
-    }
-
     private static class BlockToHighlight {
             ChunkCoordinates pos;
             World world;
-            int renderUntilTick;
+            long renderUntilTime;
             int rgb;
 
-            public BlockToHighlight(ChunkCoordinates parPos, World parWorld, int parRenderUntilTick) {
+            public BlockToHighlight(ChunkCoordinates parPos, World parWorld, long parRenderUntilTime) {
                 pos = parPos;
                 world = parWorld;
-                renderUntilTick = parRenderUntilTick;
+                renderUntilTime = parRenderUntilTime;
 
                 Block block = world.getBlock(pos.posX, pos.posY, pos.posZ);
                 int metadata = world.getBlockMetadata(pos.posX, pos.posY, pos.posZ);
@@ -120,7 +115,7 @@ public final class DowsingRodRenderer {
     public static void addBlockToHighlight(ChunkCoordinates parPos, World parWorld, EntityPlayer parPlayer, float parRenderDuration) {
         blocksToHighlight.put(parPos,
                 new DowsingRodRenderer.BlockToHighlight(parPos, parWorld,
-                            getTickCounter() + Math.round(Constants.TICKS_PER_SEC * parRenderDuration)
+                            parWorld.getTotalWorldTime() + Math.round(Constants.TICKS_PER_SEC * parRenderDuration)
                         )
         );
     }
@@ -138,16 +133,15 @@ public final class DowsingRodRenderer {
 
         Tessellator.renderingWorldRenderer = false;
 
-        int tick = getTickCounter();
-        int dyn_rgb = Color.HSBtoRGB(tick % 200 / 200F, 0.6F, 1F);
 
         Enumeration<ChunkCoordinates> e = blocksToHighlight.keys();
         while (e.hasMoreElements()) {
             ChunkCoordinates keyPos = e.nextElement();
             BlockToHighlight blockToHighlight = blocksToHighlight.get(keyPos);
             Block block = blockToHighlight.world.getBlock(blockToHighlight.pos.posX, blockToHighlight.pos.posY, blockToHighlight.pos.posZ);
+            long cur_time = blockToHighlight.world.getTotalWorldTime();
 
-            if (blockToHighlight.renderUntilTick < tick
+            if (blockToHighlight.renderUntilTime < cur_time
                     // XXX better way?  does this even work?
                     // XXX definitely doesn't work if you switch to a new save game and are in same dimension!
                     || blockToHighlight.world.provider.dimensionId != Minecraft.getMinecraft().theWorld.provider.dimensionId
@@ -157,7 +151,10 @@ public final class DowsingRodRenderer {
                 blocksToHighlight.remove(blockToHighlight.pos);
             }
             else {
-                renderBlockOutlineAt(blockToHighlight.pos, blockToHighlight.rgb != -1 ? blockToHighlight.rgb : dyn_rgb);
+                renderBlockOutlineAt(blockToHighlight.pos,
+                        blockToHighlight.rgb != -1
+                            ? blockToHighlight.rgb
+                            : Color.HSBtoRGB(cur_time % 200 / 200F, 0.6F, 1F));
             }
         }
 
