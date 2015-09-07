@@ -4,7 +4,7 @@ Ore Dowsing - dowsing rods to help find ores and other blocks
 This Minecraft mod provides items called Dowsing Rods which can help find ores
 and other blocks. When you right-click with a Dowsing Rod it highlights ores
 which it finds in a cube around you (sized from 9x9x9 to 17x17x17 depending
-on the tier). Which ores it highlights are also dependent on the tier. See
+on the tier). Which ores it highlights is also dependent on the tier. See
 [the wiki](https://github.com/rosche/ore-dowsing/wiki) for more details.
 
 Requirements

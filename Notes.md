@@ -5,7 +5,7 @@ release checklist
 - edit Changelog.md, update version, date
 - git commit
 - git tag
-- git merge/push
+- git merge/push (including git push origin <tag>)
 - ./gradlew build
 - test jar
 - upload jar
