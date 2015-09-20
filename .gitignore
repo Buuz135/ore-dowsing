@@ -1,11 +1,14 @@
 .*
 *~
+*.launch
 CREDITS-fml.txt
 LICENSE-fml.txt
 MinecraftForge-Credits.txt
 MinecraftForge-License.txt
+Paulscode*.txt
 README.txt
 bin
+build
 eclipse
-forge-1.7.10-10.13.2.1291-changelog.txt
+forge-*-changelog.txt
 libs
