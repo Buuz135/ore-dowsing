@@ -4,9 +4,9 @@ import org.argon.roderick.minecraft.oredowsing.init.CommonProxy;
 import org.argon.roderick.minecraft.oredowsing.init.ModItems;
 import org.argon.roderick.minecraft.oredowsing.lib.Reference;
 
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.*;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.*;
 
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION)
 public class OreDowsing {
@@ -18,14 +18,14 @@ public class OreDowsing {
     public void preInit(FMLPreInitializationEvent event)
     {
         proxy.preInit(event);
-        ModItems.preInit();
+        ModItems.preInit(event);
     }
 
     @Mod.EventHandler
     public void Init(FMLInitializationEvent event)
     {
         proxy.init(event);
-        ModItems.init();
+        ModItems.init(event);
     }
 
     @Mod.EventHandler

@@ -1,6 +1,6 @@
 package org.argon.roderick.minecraft.oredowsing.render;
 
-/* Thanks to Vazkii for most of the code which follows. */
+// Thanks to Vazkii for the code on which the following was based.
 
 /**
  * This class was created by <Vazkii>. It's distributed as
@@ -20,24 +20,26 @@ import java.util.Hashtable;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.oredict.OreDictionary;
 
 import org.argon.roderick.minecraft.oredowsing.lib.Constants;
 import org.lwjgl.opengl.GL11;
 
-import cofh.lib.util.helpers.ItemHelper;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+// XXX store colors as Color objects not ints
 
 public final class DowsingRodRenderer {
-    private static Hashtable<ChunkCoordinates, BlockToHighlight> blocksToHighlight = new Hashtable<ChunkCoordinates, BlockToHighlight>();
+    private static Hashtable<BlockPos, BlockToHighlight> blocksToHighlight = new Hashtable<BlockPos, BlockToHighlight>();
 
     private static Hashtable<String, Integer> blockColor = new Hashtable<String, Integer>();
     static {
@@ -88,31 +90,37 @@ public final class DowsingRodRenderer {
     }
 
     private static class BlockToHighlight {
-            ChunkCoordinates pos;
+            BlockPos pos;
             World world;
             long renderUntilTime;
             int rgb;
 
-            public BlockToHighlight(ChunkCoordinates parPos, World parWorld, long parRenderUntilTime) {
+            public BlockToHighlight(BlockPos parPos, World parWorld, long parRenderUntilTime) {
                 pos = parPos;
                 world = parWorld;
                 renderUntilTime = parRenderUntilTime;
 
-                Block block = world.getBlock(pos.posX, pos.posY, pos.posZ);
-                int metadata = world.getBlockMetadata(pos.posX, pos.posY, pos.posZ);
-                String ore_name = ItemHelper.getOreName(new ItemStack(block, 1, metadata));
-                if (blockColor.containsKey(ore_name)) {
-                    rgb = (Integer) blockColor.get(ore_name);
+                Block block = world.getBlockState(pos).getBlock();
+                //int metadata = world.getBlockMetadata(pos);
+                //int metadata = block.getDamageValue(world, pos);
+                int ore_ids[] = OreDictionary.getOreIDs(new ItemStack(block));
+                rgb = -1;
+                for (int i = 0; i < ore_ids.length; i++) {
+                	String ore_name = OreDictionary.getOreName(ore_ids[i]);
+                    if (blockColor.containsKey(ore_name)) {
+                        rgb = (Integer) blockColor.get(ore_name);
+                        break;
+                    }
                 }
-                else {
-                    rgb = -1;
+                if (rgb == -1) {
                     //System.out.println("no color for " + ore_name + " from " + block);
                 }
 
             }
     }
 
-    public static void addBlockToHighlight(ChunkCoordinates parPos, World parWorld, EntityPlayer parPlayer, float parRenderDuration) {
+    public static void addBlockToHighlight(BlockPos parPos, World parWorld, EntityPlayer parPlayer, float parRenderDuration) {
+    	//System.out.println("highlight " + parPos);
         blocksToHighlight.put(parPos,
                 new DowsingRodRenderer.BlockToHighlight(parPos, parWorld,
                             parWorld.getTotalWorldTime() + Math.round(Constants.TICKS_PER_SEC * parRenderDuration)
@@ -126,27 +134,26 @@ public final class DowsingRodRenderer {
             return;
         }
 
-        GL11.glPushMatrix();
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_BLEND);
+        GlStateManager.pushAttrib();
+        GlStateManager.pushMatrix();
 
-        Tessellator.renderingWorldRenderer = false;
+        GlStateManager.disableDepth();
+        GlStateManager.disableTexture2D();
+        GlStateManager.disableBlend();
 
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.scale(1F, 1F, 1F);
 
-        Enumeration<ChunkCoordinates> e = blocksToHighlight.keys();
+        Enumeration<BlockPos> e = blocksToHighlight.keys();
         while (e.hasMoreElements()) {
-            ChunkCoordinates keyPos = e.nextElement();
+            BlockPos keyPos = e.nextElement();
             BlockToHighlight blockToHighlight = blocksToHighlight.get(keyPos);
-            Block block = blockToHighlight.world.getBlock(blockToHighlight.pos.posX, blockToHighlight.pos.posY, blockToHighlight.pos.posZ);
             long cur_time = blockToHighlight.world.getTotalWorldTime();
 
             if (blockToHighlight.renderUntilTime < cur_time
-                    // XXX better way?  does this even work?
-                    // XXX definitely doesn't work if you switch to a new save game and are in same dimension!
-                    || blockToHighlight.world.provider.dimensionId != Minecraft.getMinecraft().theWorld.provider.dimensionId
+                    || blockToHighlight.world.provider.getDimensionId() != Minecraft.getMinecraft().theWorld.provider.getDimensionId()
                     // XXX handle any replacement rather than just air
-                    || block == Blocks.air
+                    || blockToHighlight.world.isAirBlock(keyPos)
                     ) {
                 blocksToHighlight.remove(blockToHighlight.pos);
             }
@@ -158,59 +165,63 @@ public final class DowsingRodRenderer {
             }
         }
 
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_BLEND);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
+        GlStateManager.popAttrib();
     }
 
-    private void renderBlockOutlineAt(ChunkCoordinates pos, int color) {
+    private void renderBlockOutlineAt(BlockPos pos, int color) {
         renderBlockOutlineAt(pos, color, 1F);
     }
 
-    private void renderBlockOutlineAt(ChunkCoordinates pos, int color, float thickness) {
-        GL11.glPushMatrix();
-        GL11.glTranslated(pos.posX - RenderManager.renderPosX, pos.posY - RenderManager.renderPosY, pos.posZ - RenderManager.renderPosZ + 1);
+    private void renderBlockOutlineAt(BlockPos pos, int color, float thickness) {
+        GlStateManager.pushMatrix();
+
+        EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+        GlStateManager.translate(
+        		pos.getX() - player.posX,
+        		pos.getY() - player.posY,
+        		pos.getZ() - player.posZ);
+
         Color colorRGB = new Color(color);
-        GL11.glColor4ub((byte) colorRGB.getRed(), (byte) colorRGB.getGreen(), (byte) colorRGB.getBlue(), (byte) 255);
 
         World world = Minecraft.getMinecraft().theWorld;
-        Block block = world.getBlock(pos.posX, pos.posY, pos.posZ);
-        drawWireframe : {
-            if(block != null) {
+        Block block = world.getBlockState(pos).getBlock();
+       drawWireframe : {
+            if (block != null) {
                 AxisAlignedBB axis;
 
                 //if(block instanceof IWireframeAABBProvider)
-                //  axis = ((IWireframeAABBProvider) block).getWireframeAABB(world, pos.posX, pos.posY, pos.posZ);
+                //  axis = ((IWireframeAABBProvider) block).getWireframeAABB(world, pos.getX(), pos.getY(), pos.getZ());
                 //else
-                    axis = block.getSelectedBoundingBoxFromPool(world, pos.posX, pos.posY, pos.posZ);
+                    axis = block.getSelectedBoundingBox(world, pos);
 
-                if(axis == null)
+                if (axis == null)
                     break drawWireframe;
 
-                axis.minX -= pos.posX;
-                axis.maxX -= pos.posX;
-                axis.minY -= pos.posY;
-                axis.maxY -= pos.posY;
-                axis.minZ -= pos.posZ + 1;
-                axis.maxZ -= pos.posZ + 1;
+                axis = new AxisAlignedBB(
+                                axis.minX - pos.getX(),
+                                axis.minY - pos.getY(),
+                                axis.minZ - pos.getZ(),
+                                axis.maxX - pos.getX(),
+                                axis.maxY - pos.getY(),
+                                axis.maxZ - pos.getZ());
 
-                GL11.glScalef(1F, 1F, 1F);
-
+                GlStateManager.color(colorRGB.getRed()/255F, colorRGB.getGreen()/255F, colorRGB.getBlue()/255F, 255);
                 GL11.glLineWidth(thickness);
                 renderBlockOutline(axis);
 
-                GL11.glLineWidth(thickness + 3F);
-                GL11.glColor4ub((byte) colorRGB.getRed(), (byte) colorRGB.getGreen(), (byte) colorRGB.getBlue(), (byte) 64);
+                GlStateManager.color(colorRGB.getRed()/255F, colorRGB.getGreen()/255F, colorRGB.getBlue()/255F, 64);
+                GL11.glLineWidth(thickness + 1F);
                 renderBlockOutline(axis);
             }
         }
 
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
     }
 
     private void renderBlockOutline(AxisAlignedBB aabb) {
-        Tessellator tessellator = Tessellator.instance;
+        Tessellator tess = Tessellator.getInstance();
+        WorldRenderer wr = tess.getWorldRenderer();
 
         double ix = aabb.minX;
         double iy = aabb.minY;
@@ -218,44 +229,48 @@ public final class DowsingRodRenderer {
         double ax = aabb.maxX;
         double ay = aabb.maxY;
         double az = aabb.maxZ;
+        
+        //System.out.println("outline " + ix + "," + iy + "," + iz + " - " + ax + "," + ay + "," + az);
 
-        tessellator.startDrawing(GL11.GL_LINES);
-        tessellator.addVertex(ix, iy, iz);
-        tessellator.addVertex(ix, ay, iz);
+        wr.startDrawing(GL11.GL_LINES);
 
-        tessellator.addVertex(ix, ay, iz);
-        tessellator.addVertex(ax, ay, iz);
+        wr.addVertex(ix, iy, iz);
+        wr.addVertex(ix, ay, iz);
 
-        tessellator.addVertex(ax, ay, iz);
-        tessellator.addVertex(ax, iy, iz);
+        wr.addVertex(ix, ay, iz);
+        wr.addVertex(ax, ay, iz);
 
-        tessellator.addVertex(ax, iy, iz);
-        tessellator.addVertex(ix, iy, iz);
+        wr.addVertex(ax, ay, iz);
+        wr.addVertex(ax, iy, iz);
 
-        tessellator.addVertex(ix, iy, az);
-        tessellator.addVertex(ix, ay, az);
+        wr.addVertex(ax, iy, iz);
+        wr.addVertex(ix, iy, iz);
 
-        tessellator.addVertex(ix, iy, az);
-        tessellator.addVertex(ax, iy, az);
+        wr.addVertex(ix, iy, az);
+        wr.addVertex(ix, ay, az);
 
-        tessellator.addVertex(ax, iy, az);
-        tessellator.addVertex(ax, ay, az);
+        wr.addVertex(ix, iy, az);
+        wr.addVertex(ax, iy, az);
 
-        tessellator.addVertex(ix, ay, az);
-        tessellator.addVertex(ax, ay, az);
+        wr.addVertex(ax, iy, az);
+        wr.addVertex(ax, ay, az);
 
-        tessellator.addVertex(ix, iy, iz);
-        tessellator.addVertex(ix, iy, az);
+        wr.addVertex(ix, ay, az);
+        wr.addVertex(ax, ay, az);
 
-        tessellator.addVertex(ix, ay, iz);
-        tessellator.addVertex(ix, ay, az);
+        wr.addVertex(ix, iy, iz);
+        wr.addVertex(ix, iy, az);
 
-        tessellator.addVertex(ax, iy, iz);
-        tessellator.addVertex(ax, iy, az);
+        wr.addVertex(ix, ay, iz);
+        wr.addVertex(ix, ay, az);
 
-        tessellator.addVertex(ax, ay, iz);
-        tessellator.addVertex(ax, ay, az);
+        wr.addVertex(ax, iy, iz);
+        wr.addVertex(ax, iy, az);
 
-        tessellator.draw();
+        wr.addVertex(ax, ay, iz);
+        wr.addVertex(ax, ay, az);
+
+        tess.draw();
     }
+    
 }

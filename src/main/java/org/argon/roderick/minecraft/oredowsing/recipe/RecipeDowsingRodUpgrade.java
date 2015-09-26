@@ -83,13 +83,30 @@ public class RecipeDowsingRodUpgrade implements IRecipe {
     @Override
     public int getRecipeSize()
     {
-        return 9; // XXX hardcode
+        return 9;
     }
 
     @Override
     public ItemStack getRecipeOutput()
     {
         return null;
+    }
+
+	// XXX unclear about what this does but all the core implementors I looked at
+	// had exactly this
+	
+	@Override
+    public ItemStack[] getRemainingItems(InventoryCrafting inv)
+    {
+        ItemStack[] aitemstack = new ItemStack[inv.getSizeInventory()];
+
+        for (int i = 0; i < aitemstack.length; ++i)
+        {
+            ItemStack itemstack = inv.getStackInSlot(i);
+            aitemstack[i] = net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack);
+        }
+
+        return aitemstack;
     }
 
 }

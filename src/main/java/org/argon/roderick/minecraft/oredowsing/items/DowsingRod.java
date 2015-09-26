@@ -3,21 +3,22 @@ package org.argon.roderick.minecraft.oredowsing.items;
 import java.util.List;
 
 import org.argon.roderick.minecraft.oredowsing.lib.Reference;
+import org.argon.roderick.minecraft.oredowsing.lib.cofhDummy;
 import org.argon.roderick.minecraft.oredowsing.render.DowsingRodRenderer;
 
 import cofh.api.energy.IEnergyContainerItem;
-import cofh.lib.inventory.ComparableItemStackSafe;
-import cofh.lib.util.helpers.ItemHelper;
-import cofh.lib.util.helpers.StringHelper;
-import cpw.mods.fml.common.Optional;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
 @Optional.Interface(modid = "CoFHAPI|energy", iface = "cofh.api.energy.IEnergyContainerItem")
@@ -32,8 +33,9 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     private static final String NBT_TARGET_BLOCK_ID       = "block_id";
     private static final String NBT_TARGET_BLOCK_METADATA = "block_metadata";
     private static final String NBT_NUM_UPGRADES          = "num_upgrades";
-
-    private final Block   forcedTargetBlock; // null for any ore
+    
+    private final String  name;
+    private final BlockState forcedTargetBlockState;
     private final int     baseSquareRadius;
     private final boolean isChargeable;
     private final int     diamondsPerUpgrade;
@@ -48,36 +50,46 @@ public class DowsingRod extends Item implements IEnergyContainerItem
             int parDiamondsPerUpgrade, int parMaxUpgrades)
     {
         super();
-        setUnlocalizedName(Reference.MODID + "_" + parNamePrefix + BASE_NAME);
-        setTextureName(Reference.MODID + ":" + parNamePrefix + BASE_NAME);
+
+        name               = parNamePrefix + BASE_NAME;
+        forcedTargetBlockState = parForcedTargetBlock == null ? null : new BlockState(parForcedTargetBlock);
+        baseSquareRadius   = parSquareRadius;
+        isChargeable       = parIsChargeable;
+        diamondsPerUpgrade = parDiamondsPerUpgrade;
+
+        setUnlocalizedName(Reference.MODID + "_" + name);
         setMaxStackSize(1);
         setMaxDamage(parMaxDamage);
         setCreativeTab(CreativeTabs.tabTools);
 
-        forcedTargetBlock  = parForcedTargetBlock;
-        baseSquareRadius   = parSquareRadius;
-        isChargeable       = parIsChargeable;
-        diamondsPerUpgrade = parDiamondsPerUpgrade;
         maxUpgrades        = parMaxUpgrades;
         ingredientBase     = parIngredientBase;
         ingredientTop      = parIngredientTop;
     }
 
+    public String getName()
+    {
+    	return name;
+    }
+
     private void initNBT(ItemStack stack)
     {
-        if (stack.stackTagCompound == null) {
-            stack.stackTagCompound= new NBTTagCompound();
+    	NBTTagCompound tc = stack.getTagCompound();
+    	
+        if (tc == null) {
+            tc = new NBTTagCompound();
+            stack.setTagCompound(tc);
         }
-        if (forcedTargetBlock != null) {
-            forceSetTarget(stack, forcedTargetBlock, 0, null);
+        if (forcedTargetBlockState != null) {
+            forceSetTarget(stack, (IBlockState) forcedTargetBlockState, null);
         }
-        stack.stackTagCompound.setInteger(NBT_RADIUS, baseSquareRadius);
-        stack.stackTagCompound.setInteger(NBT_NUM_UPGRADES, 0);
+        tc.setInteger(NBT_RADIUS, baseSquareRadius);
+        tc.setInteger(NBT_NUM_UPGRADES, 0);
     }
 
     public boolean addUpgrade(ItemStack stack, int num_upgrades)
     {
-        if (stack.stackTagCompound == null) {
+        if (stack.getTagCompound() == null) {
             initNBT(stack);
         }
 
@@ -85,8 +97,8 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         if (new_num_upgrades > maxUpgrades)
             return false;
 
-        stack.stackTagCompound.setInteger(NBT_NUM_UPGRADES, new_num_upgrades);
-        stack.stackTagCompound.setInteger(NBT_RADIUS, baseSquareRadius + new_num_upgrades);
+        stack.getTagCompound().setInteger(NBT_NUM_UPGRADES, new_num_upgrades);
+        stack.getTagCompound().setInteger(NBT_RADIUS, baseSquareRadius + new_num_upgrades);
         return true;
     }
 
@@ -107,15 +119,15 @@ public class DowsingRod extends Item implements IEnergyContainerItem
 
     public int getNumUpgrades(ItemStack stack)
     {
-        if (stack.stackTagCompound == null) {
+        if (stack.getTagCompound() == null) {
             initNBT(stack);
         }
-        return stack.stackTagCompound.getInteger(NBT_NUM_UPGRADES);
+        return stack.getTagCompound().getInteger(NBT_NUM_UPGRADES);
     }
 
     public boolean canUpgrade(ItemStack stack)
     {
-        if (stack.stackTagCompound == null) {
+        if (stack.getTagCompound() == null) {
             initNBT(stack);
         }
         return this.getNumUpgrades(stack) < this.getMaxUpgrades();
@@ -123,11 +135,11 @@ public class DowsingRod extends Item implements IEnergyContainerItem
 
     public ItemStack getTargetStack(ItemStack stack)
     {
-        if (stack.stackTagCompound == null) {
+        if (stack.getTagCompound() == null) {
             initNBT(stack);
         }
-        int block_id = stack.stackTagCompound.getInteger(NBT_TARGET_BLOCK_ID);
-        int metadata = stack.stackTagCompound.getInteger(NBT_TARGET_BLOCK_METADATA);
+        int block_id = stack.getTagCompound().getInteger(NBT_TARGET_BLOCK_ID);
+        int metadata = stack.getTagCompound().getInteger(NBT_TARGET_BLOCK_METADATA);
         return block_id == 0
                 ? null
                 : new ItemStack(Block.getBlockById(block_id), 1, metadata);
@@ -135,42 +147,42 @@ public class DowsingRod extends Item implements IEnergyContainerItem
 
     private int getSquareRadius(ItemStack stack)
     {
-        if (stack.stackTagCompound == null) {
+        if (stack.getTagCompound() == null) {
             initNBT(stack);
         }
-        return stack.stackTagCompound.getInteger(NBT_RADIUS);
+        return stack.getTagCompound().getInteger(NBT_RADIUS);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean par4)
     {
-        if (stack.stackTagCompound == null) {
+        if (stack.getTagCompound() == null) {
             initNBT(stack);
         }
 
         ItemStack target_stack = getTargetStack(stack);
-        list.add(String.format(StringHelper.localize("text.oredowsing.tooltip.0"),
+        list.add(String.format(cofhDummy.localize("text.oredowsing.tooltip.0"),
                         (target_stack != null ? target_stack.getDisplayName()
-                            : StringHelper.localize("text.oredowsing.all_ores"))));
-        list.add(String.format(StringHelper.localize("text.oredowsing.tooltip.1"),
+                            : cofhDummy.localize("text.oredowsing.all_ores"))));
+        list.add(String.format(cofhDummy.localize("text.oredowsing.tooltip.1"),
                         1+2*getSquareRadius(stack)));
-        if (forcedTargetBlock == null) {
-            list.add(StringHelper.localize("text.oredowsing.tooltip.2"));
+        if (forcedTargetBlockState == null) {
+            list.add(cofhDummy.localize("text.oredowsing.tooltip.2"));
         }
         if (isChargeable) {
-            list.add(StringHelper.localize("text.oredowsing.tooltip.3"));
+            list.add(cofhDummy.localize("text.oredowsing.tooltip.3"));
         }
         if (this.getNumUpgrades(stack) < maxUpgrades) {
-            list.add(String.format(StringHelper.localize("text.oredowsing.tooltip.4"), diamondsPerUpgrade));
+            list.add(String.format(cofhDummy.localize("text.oredowsing.tooltip.4"), diamondsPerUpgrade));
         }
     }
 
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
     {
-        if (StringHelper.isShiftKeyDown()) {
-            setTarget(stack, null, 0, world.isRemote ? null : player);
+        if (cofhDummy.isShiftKeyDown()) {
+            setTarget(stack, null, world.isRemote ? null : player);
         }
         else {
             divine(stack, world, player);
@@ -179,12 +191,10 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     }
 
     @Override
-    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
+    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-        if (StringHelper.isShiftKeyDown()) {
-            setTarget(stack, world.getBlock(x, y, z),
-                    world.getBlockMetadata(x, y, z),
-                    world.isRemote ? null : player);
+        if (cofhDummy.isShiftKeyDown()) {
+            setTarget(stack, world.getBlockState(pos), world.isRemote ? null : player);
         }
         else {
             divine(stack, world, player);
@@ -192,42 +202,47 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         return true;
     }
 
-    public void setTarget(ItemStack stack, Block targetBlock, int metadata, EntityPlayer player)
+    public void setTarget(ItemStack stack, IBlockState targetBlockState, EntityPlayer player)
     {
-        if (forcedTargetBlock != null) {
+        if (forcedTargetBlockState != null) {
             if (player != null) {
                 player.addChatMessage(new ChatComponentText(
-                        StringHelper.localize("text.oredowsing.change_target.no")));
+                        cofhDummy.localize("text.oredowsing.change_target.no")));
             }
             return;
         }
-        forceSetTarget(stack, targetBlock, metadata, player);
+        forceSetTarget(stack, targetBlockState, player);
     }
 
-    private void forceSetTarget(ItemStack stack, Block targetBlock, int metadata, EntityPlayer player)
+    private void forceSetTarget(ItemStack stack, IBlockState targetBlockState, EntityPlayer player)
     {
-        if (stack.stackTagCompound == null) {
+        Block targetBlock = targetBlockState == null ? null : targetBlockState.getBlock();
+
+        if (stack.getTagCompound() == null) {
             initNBT(stack);
         }
-        stack.stackTagCompound.setInteger(NBT_TARGET_BLOCK_ID,
+        stack.getTagCompound().setInteger(NBT_TARGET_BLOCK_ID,
                 targetBlock == null ? 0 : Block.getIdFromBlock(targetBlock));
-        stack.stackTagCompound.setInteger(NBT_TARGET_BLOCK_METADATA, metadata);
+        int meta = targetBlock == null ? 0 : targetBlock.damageDropped(targetBlockState);
+        stack.getTagCompound().setInteger(NBT_TARGET_BLOCK_METADATA, meta);
         if (player != null) {
             player.addChatMessage(new ChatComponentText(String.format(
-                    StringHelper.localize("text.oredowsing.change_target.yes"),
-                    (targetBlock == null
-                        ? StringHelper.localize("text.oredowsing.all_ores")
-                        : new ItemStack(targetBlock, 1, metadata).getDisplayName()))));
+                    cofhDummy.localize("text.oredowsing.change_target.yes"),
+                    (targetBlockState == null
+                        ? cofhDummy.localize("text.oredowsing.all_ores")
+                        : new ItemStack(targetBlock, 1, meta).getDisplayName()))));
         }
     }
 
-    public boolean blockMatches(ComparableItemStackSafe comp_target_stack, ItemStack world_stack)
+    public boolean blockMatches(ItemStack target_stack, ItemStack world_stack)
     {
-        return (comp_target_stack != null)
+        return (target_stack != null)
                 // detect specific block
-                ? comp_target_stack.isItemEqual(new ComparableItemStackSafe(world_stack))
+        		// XXX use ore dictionary, but only if you can limit it to 
+        		// things like oreCopper, not different kinds of planks
+                ? target_stack.isItemEqual(world_stack)
                 // detect any ore
-                : ItemHelper.isOre(world_stack);
+                : cofhDummy.isOre(world_stack);
     }
 
     public void divine(ItemStack stack, World world, EntityPlayer player)
@@ -238,25 +253,26 @@ public class DowsingRod extends Item implements IEnergyContainerItem
             return;
 
         ItemStack target_stack = getTargetStack(stack);
-        ComparableItemStackSafe comp_target_stack = (target_stack != null)
-                ? (new ComparableItemStackSafe(target_stack))
-                : null;
         int r = getSquareRadius(stack);
         int x, y, z;
         for (x = (int)player.posX - r; x <= player.posX + r; x++) {
             for (y = (int)player.posY - r; y <= player.posY + r; y++) {
                 for (z = (int)player.posZ - r; z <= player.posZ + r; z++) {
-                    if (blockMatches(comp_target_stack,
-                                    new ItemStack(world.getBlock(x, y, z), 1,
-                                            world.getBlockMetadata(x, y, z)))) {
-                        DowsingRodRenderer.addBlockToHighlight(new ChunkCoordinates(x, y, z), world, player, RENDER_DURATION);
-                    }
+                	BlockPos pos       = new BlockPos(x, y, z);
+                	IBlockState bstate = world.getBlockState(pos);
+                	Block block        = bstate.getBlock();
+                	ItemStack is       = new ItemStack(block, 1, block.damageDropped(bstate));
+                    if (blockMatches(target_stack, is)) {
+                        DowsingRodRenderer.addBlockToHighlight(pos, world, player, RENDER_DURATION);
+                	}
                 }
             }
         }
     }
 
-    // ---------------------------------------------------------------------
+    // RF interface --------------------------------------------------------
+    
+    // XXX test RF recharging with 1.8
 
     @Override
     public int receiveEnergy(ItemStack container, int maxReceive, boolean simulate)
