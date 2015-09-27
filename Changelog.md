@@ -1,8 +1,9 @@
 Change Log
 ==========
 
-- version 0.5  TBA
+- version 0.5  2015-09-26
     - update for Minecraft 1.8
+    - no longer depends on CofHLib (doesn't exist for 1.8)
 
 - version 0.4  2015-09-07
     - oops, correct crash on client in multiplayer

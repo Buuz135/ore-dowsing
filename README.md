@@ -10,8 +10,13 @@ on the tier). Which ores it highlights is also dependent on the tier. See
 Requirements
 ============
 
-- Minecraft, version 1.7.10
-- [Minecraft Forge](http://files.minecraftforge.net/), version 10.13.2.1291
+Minecraft 1.8 version:
+- [Minecraft Forge](http://files.minecraftforge.net/), built/tested with
+  version 1.8-11.14.3.1515
+
+Minecraft 1.7.10 version:
+- [Minecraft Forge](http://files.minecraftforge.net/), built/tested with
+  version 10.13.2.1291
 - [CoFHLib](http://minecraft.curseforge.com/mc-mods/220333-cofhlib), version 1.0.2-160
 
 [Download](http://minecraft.curseforge.com/mc-mods/232695-ore-dowsing/files/latest)
