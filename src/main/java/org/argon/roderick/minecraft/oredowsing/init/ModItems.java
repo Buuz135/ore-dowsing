@@ -22,10 +22,10 @@ public class ModItems
 {
     public static ArrayList<DowsingRod> dowsingRods = new ArrayList<DowsingRod>();
 
-    public static DowsingRod    woodDowsingRod;
-    public static DowsingRod    ironDowsingRod;
-    public static DowsingRod    goldDowsingRod;
-    public static DowsingRod diamondDowsingRod;
+    public static DowsingRod    woodDowsingRod = createDowsingRod("Wood",    Items.stick,      Items.coal,                                        Blocks.iron_ore,      50, 4, false, 0, 0);
+    public static DowsingRod    ironDowsingRod = createDowsingRod("Iron",    Items.iron_ingot, Items.redstone,                                    Blocks.gold_ore,     100, 6, false, 0, 0);
+    public static DowsingRod    goldDowsingRod = createDowsingRod("Gold",    Items.gold_ingot, new ItemStack(Items.dye, 1, Constants.META_LAPIS), Blocks.diamond_ore,  100, 8, false, 0, 0);
+    public static DowsingRod diamondDowsingRod = createDowsingRod("Diamond", Items.diamond,    Items.emerald,                                     null,               1000, 8, true,  4, 8);
 
     public static DowsingRod createDowsingRod(String parNamePrefix,
             Object parIngredientBase, Object parIngredientTop,
@@ -44,11 +44,6 @@ public class ModItems
 
     public static void preInit(FMLPreInitializationEvent event)
     {
-           woodDowsingRod = createDowsingRod("Wood",    Items.stick,      Items.coal,                                        Blocks.iron_ore,      50, 4, false, 0, 0);
-           ironDowsingRod = createDowsingRod("Iron",    Items.iron_ingot, Items.redstone,                                    Blocks.gold_ore,     100, 6, false, 0, 0);
-           goldDowsingRod = createDowsingRod("Gold",    Items.gold_ingot, new ItemStack(Items.dye, 1, Constants.META_LAPIS), Blocks.diamond_ore,  100, 8, false, 0, 0);
-        diamondDowsingRod = createDowsingRod("Diamond", Items.diamond,    Items.emerald,                                     null,               1000, 8, true,  4, 8);
-
         for (DowsingRod rod : dowsingRods) {
             GameRegistry.registerItem(rod, rod.getName());
         }
