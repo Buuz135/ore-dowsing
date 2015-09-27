@@ -9,7 +9,6 @@ import org.argon.roderick.minecraft.oredowsing.render.DowsingRodRenderer;
 import cofh.api.energy.IEnergyContainerItem;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockState;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,13 +28,13 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     private static final float  RENDER_DURATION = 30.0F;
     private static final int    RF_PER_DAMAGE   = 3000;
 
-    private static final String NBT_RADIUS                = "radius";
-    private static final String NBT_TARGET_BLOCK_ID       = "block_id";
-    private static final String NBT_TARGET_BLOCK_METADATA = "block_metadata";
-    private static final String NBT_NUM_UPGRADES          = "num_upgrades";
+    private static final String NBT_RADIUS            = "radius";
+    private static final String NBT_TARGET_BLOCK_ID   = "block_id";
+    private static final String NBT_TARGET_BLOCK_META = "block_meta";
+    private static final String NBT_NUM_UPGRADES      = "num_upgrades";
     
     private final String  name;
-    private final BlockState forcedTargetBlockState;
+    private final Block   forcedTargetBlock;
     private final int     baseSquareRadius;
     private final boolean isChargeable;
     private final int     diamondsPerUpgrade;
@@ -52,7 +51,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         super();
 
         name               = parNamePrefix + BASE_NAME;
-        forcedTargetBlockState = parForcedTargetBlock == null ? null : new BlockState(parForcedTargetBlock);
+        forcedTargetBlock  = parForcedTargetBlock;
         baseSquareRadius   = parSquareRadius;
         isChargeable       = parIsChargeable;
         diamondsPerUpgrade = parDiamondsPerUpgrade;
@@ -80,8 +79,8 @@ public class DowsingRod extends Item implements IEnergyContainerItem
             tc = new NBTTagCompound();
             stack.setTagCompound(tc);
         }
-        if (forcedTargetBlockState != null) {
-            forceSetTarget(stack, (IBlockState) forcedTargetBlockState, null);
+        if (forcedTargetBlock != null) {
+            forceSetTarget(stack, Block.getIdFromBlock(forcedTargetBlock), 0, null);
         }
         tc.setInteger(NBT_RADIUS, baseSquareRadius);
         tc.setInteger(NBT_NUM_UPGRADES, 0);
@@ -139,10 +138,10 @@ public class DowsingRod extends Item implements IEnergyContainerItem
             initNBT(stack);
         }
         int block_id = stack.getTagCompound().getInteger(NBT_TARGET_BLOCK_ID);
-        int metadata = stack.getTagCompound().getInteger(NBT_TARGET_BLOCK_METADATA);
+        int meta     = stack.getTagCompound().getInteger(NBT_TARGET_BLOCK_META);
         return block_id == 0
                 ? null
-                : new ItemStack(Block.getBlockById(block_id), 1, metadata);
+                : new ItemStack(Block.getBlockById(block_id), 1, meta);
     }
 
     private int getSquareRadius(ItemStack stack)
@@ -167,7 +166,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
                             : cofhDummy.localize("text.oredowsing.all_ores"))));
         list.add(String.format(cofhDummy.localize("text.oredowsing.tooltip.1"),
                         1+2*getSquareRadius(stack)));
-        if (forcedTargetBlockState == null) {
+        if (forcedTargetBlock == null) {
             list.add(cofhDummy.localize("text.oredowsing.tooltip.2"));
         }
         if (isChargeable) {
@@ -204,7 +203,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
 
     public void setTarget(ItemStack stack, IBlockState targetBlockState, EntityPlayer player)
     {
-        if (forcedTargetBlockState != null) {
+        if (forcedTargetBlock != null) {
             if (player != null) {
                 player.addChatMessage(new ChatComponentText(
                         cofhDummy.localize("text.oredowsing.change_target.no")));
@@ -214,23 +213,33 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         forceSetTarget(stack, targetBlockState, player);
     }
 
-    private void forceSetTarget(ItemStack stack, IBlockState targetBlockState, EntityPlayer player)
+    private void forceSetTarget(ItemStack stack, int targetBlockId, int targetBlockMeta, EntityPlayer player)
     {
-        Block targetBlock = targetBlockState == null ? null : targetBlockState.getBlock();
-
         if (stack.getTagCompound() == null) {
             initNBT(stack);
         }
-        stack.getTagCompound().setInteger(NBT_TARGET_BLOCK_ID,
-                targetBlock == null ? 0 : Block.getIdFromBlock(targetBlock));
-        int meta = targetBlock == null ? 0 : targetBlock.damageDropped(targetBlockState);
-        stack.getTagCompound().setInteger(NBT_TARGET_BLOCK_METADATA, meta);
+        stack.getTagCompound().setInteger(NBT_TARGET_BLOCK_ID,   targetBlockId);
+        stack.getTagCompound().setInteger(NBT_TARGET_BLOCK_META, targetBlockMeta);
         if (player != null) {
             player.addChatMessage(new ChatComponentText(String.format(
                     cofhDummy.localize("text.oredowsing.change_target.yes"),
-                    (targetBlockState == null
+                    (targetBlockId == 0
                         ? cofhDummy.localize("text.oredowsing.all_ores")
-                        : new ItemStack(targetBlock, 1, meta).getDisplayName()))));
+                        : new ItemStack(Block.getBlockById(targetBlockId), 1, targetBlockMeta).getDisplayName()))));
+        }
+    }
+
+    private void forceSetTarget(ItemStack stack, IBlockState targetBlockState, EntityPlayer player)
+    {
+        if (targetBlockState == null) {
+            forceSetTarget(stack, 0, 0, player);
+        }
+        else {
+            Block targetBlock = targetBlockState.getBlock();
+            forceSetTarget(stack,
+                            Block.getIdFromBlock(targetBlock),
+                            targetBlock.getMetaFromState(targetBlockState),
+                            player);
         }
     }
 
