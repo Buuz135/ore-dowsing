@@ -180,7 +180,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
     {
-        if (cofhDummy.isShiftKeyDown()) {
+        if (player.isSneaking()) {
             setTarget(stack, null, world.isRemote ? null : player);
         }
         else {
@@ -192,7 +192,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     @Override
     public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-        if (cofhDummy.isShiftKeyDown()) {
+        if (player.isSneaking()) {
             setTarget(stack, world.getBlockState(pos), world.isRemote ? null : player);
         }
         else {
