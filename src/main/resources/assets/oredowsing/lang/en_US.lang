@@ -9,7 +9,8 @@ text.oredowsing.tooltip.0=Right-click to highlight %s
 text.oredowsing.tooltip.1=inside a size %s cube around you.
 text.oredowsing.tooltip.2=Shift-right-click to change target block.
 text.oredowsing.tooltip.3=Charge with RF to repair.
-text.oredowsing.tooltip.4=Upgrade with %d diamonds in a crafting grid.
+text.oredowsing.tooltip.4.s=Upgrade with %d diamond in a crafting grid.
+text.oredowsing.tooltip.4.p=Upgrade with %d diamonds in a crafting grid.
 
 text.oredowsing.change_target.yes=Target set to %s
 text.oredowsing.change_target.no= This item doesn't allow changing the target block

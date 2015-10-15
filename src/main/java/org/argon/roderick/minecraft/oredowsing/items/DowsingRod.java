@@ -162,7 +162,9 @@ public class DowsingRod extends Item implements IEnergyContainerItem
             list.add(StringHelper.localize("text.oredowsing.tooltip.3"));
         }
         if (this.getNumUpgrades(stack) < maxUpgrades) {
-            list.add(String.format(StringHelper.localize("text.oredowsing.tooltip.4"), diamondsPerUpgrade));
+            list.add(String.format(StringHelper.localize(
+                            "text.oredowsing.tooltip.4." + (diamondsPerUpgrade == 1 ? "s" : "p")),
+                            diamondsPerUpgrade));
         }
     }
 
