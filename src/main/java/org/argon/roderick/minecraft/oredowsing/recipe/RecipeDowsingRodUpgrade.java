@@ -52,12 +52,7 @@ public class RecipeDowsingRodUpgrade implements IRecipe {
             }
 
             numUpgrades = numDiamonds / diamonds_per_upgrade;
-            if (dowsingRodItem.getNumUpgrades(dowsingRodStack) + numUpgrades
-                    > dowsingRodItem.getMaxUpgrades()) {
-                return false;
-            }
-
-            return true;
+            return dowsingRodItem.canUpgrade(dowsingRodStack, numUpgrades);
         }
     }
 

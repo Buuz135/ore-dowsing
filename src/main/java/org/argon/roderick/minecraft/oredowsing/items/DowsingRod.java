@@ -37,7 +37,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     private final int     baseSquareRadius;
     private final boolean isChargeable;
     private final int     diamondsPerUpgrade;
-    private final int     maxUpgrades;
+    private final int     maxSquareRadius;
     public  final Object  ingredientBase;
     public  final Object  ingredientTop;
 
@@ -45,7 +45,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
             Object parIngredientBase, Object parIngredientTop,
             Block parForcedTargetBlock,
             int parMaxDamage, int parSquareRadius, boolean parIsChargeable,
-            int parDiamondsPerUpgrade, int parMaxUpgrades)
+            int parDiamondsPerUpgrade, int parMaxSquareRadius)
     {
         super();
         setUnlocalizedName(Reference.MODID + "_" + parNamePrefix + BASE_NAME);
@@ -58,7 +58,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         baseSquareRadius   = parSquareRadius;
         isChargeable       = parIsChargeable;
         diamondsPerUpgrade = parDiamondsPerUpgrade;
-        maxUpgrades        = parMaxUpgrades;
+        maxSquareRadius    = parMaxSquareRadius;
         ingredientBase     = parIngredientBase;
         ingredientTop      = parIngredientTop;
     }
@@ -82,11 +82,12 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         }
 
         int new_num_upgrades = this.getNumUpgrades(stack) + num_upgrades;
-        if (new_num_upgrades > maxUpgrades)
+        int new_radius       = baseSquareRadius + new_num_upgrades;
+        if (new_radius > maxSquareRadius)
             return false;
 
         stack.stackTagCompound.setInteger(NBT_NUM_UPGRADES, new_num_upgrades);
-        stack.stackTagCompound.setInteger(NBT_RADIUS, baseSquareRadius + new_num_upgrades);
+        stack.stackTagCompound.setInteger(NBT_RADIUS,       new_radius);
         return true;
     }
 
@@ -100,9 +101,9 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         return diamondsPerUpgrade;
     }
 
-    public int getMaxUpgrades()
+    public int getMaxSquareRadius()
     {
-        return maxUpgrades;
+        return maxSquareRadius;
     }
 
     public int getNumUpgrades(ItemStack stack)
@@ -113,12 +114,12 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         return stack.stackTagCompound.getInteger(NBT_NUM_UPGRADES);
     }
 
-    public boolean canUpgrade(ItemStack stack)
+    public boolean canUpgrade(ItemStack stack, int num_upgrades)
     {
         if (stack.stackTagCompound == null) {
             initNBT(stack);
         }
-        return this.getNumUpgrades(stack) < this.getMaxUpgrades();
+        return this.getSquareRadius(stack) + num_upgrades <= this.getMaxSquareRadius();
     }
 
     public ItemStack getTargetStack(ItemStack stack)
@@ -161,7 +162,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         if (isChargeable) {
             list.add(StringHelper.localize("text.oredowsing.tooltip.3"));
         }
-        if (this.getNumUpgrades(stack) < maxUpgrades) {
+        if (this.canUpgrade(stack, 1)) {
             list.add(String.format(StringHelper.localize(
                             "text.oredowsing.tooltip.4." + (diamondsPerUpgrade == 1 ? "s" : "p")),
                             diamondsPerUpgrade));
