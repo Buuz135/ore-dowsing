@@ -22,11 +22,11 @@ public class ModItems
             String parIngredientBaseName,
             String parIngredientTopName,
             String parForcedTargetBlockName,
+            boolean parAllowTargetChange,
             int parMaxDamage,
             int parSquareRadius,
-            // XXX use colors boolean
+            boolean parShowOreColor,
             boolean parIsChargeable,
-            // XXX allow change boolean
             // XXX upgrade item name
             int parDiamondsPerUpgrade,
             int parMaxSquareRadius)
@@ -40,11 +40,13 @@ public class ModItems
             config.get(cat, "ingredient_tip", parIngredientTopName, "crafting ingredient for tip").getString());
         Block   forcedTargetBlock  = getBlockForString(
             config.get(cat, "target_block", parForcedTargetBlockName, "block detected, empty for all ores").getString());
-        int     maxDamage          = config.get(cat, "max_damage",           parMaxDamage         , "number of uses").getInt();
-        int     squareRadius       = config.get(cat, "square_radius",        parSquareRadius      , "detection area is 1+2*radius").getInt();
-        boolean isChargeable       = config.get(cat, "is_chargeable",        parIsChargeable      , "true to allow repairing with RF").getBoolean();
-        int     diamondsPerUpgrade = config.get(cat, "diamonds_per_upgrade", parDiamondsPerUpgrade, "> 0 allows upgrading radius").getInt();
-        int     maxSquareRadius    = config.get(cat, "max_square_radius",    parMaxSquareRadius   , "maximum upgraded radius").getInt();
+        boolean allowTargetChange  = config.get(cat, "allow_target_block_change", parAllowTargetChange , "true to allow changing which block is detected").getBoolean();
+        int     maxDamage          = config.get(cat, "num_uses",                  parMaxDamage         , "number of uses").getInt();
+        int     squareRadius       = config.get(cat, "radius_base",               parSquareRadius      , "detection area is 1+2*radius cube").getInt();
+        boolean showOreColor       = config.get(cat, "show_ore_color",            parShowOreColor      , "true to color detected ores by type").getBoolean();
+        boolean isChargeable       = config.get(cat, "is_chargeable",             parIsChargeable      , "true to allow repairing with RF").getBoolean();
+        int     diamondsPerUpgrade = config.get(cat, "diamonds_per_upgrade",      parDiamondsPerUpgrade, "> 0 allows upgrading radius").getInt();
+        int     maxSquareRadius    = config.get(cat, "radius_max",                parMaxSquareRadius   , "maximum upgraded radius, 0 if not upgradable").getInt();
 
         if (!config.get(cat, "enabled", true, "false to disable this dowsing rod completely").getBoolean()) {
             return;
@@ -52,8 +54,8 @@ public class ModItems
 
         DowsingRod rod = new DowsingRod(namePrefix,
                 ingredientBase, ingredientTop,
-                forcedTargetBlock,
-                maxDamage, squareRadius, isChargeable,
+                forcedTargetBlock, allowTargetChange,
+                maxDamage, squareRadius, showOreColor, isChargeable,
                 diamondsPerUpgrade, maxSquareRadius);
         dowsingRods.add(rod);
     }
@@ -65,10 +67,11 @@ public class ModItems
         //   rather than different top-level categories
         // - read list of rods to create from config (getStringList())
 
-        createDowsingRod(config, "Wood",    "minecraft:stick",      "minecraft:coal",                        "minecraft:iron_ore",      50, 4, false, 0,  0);
-        createDowsingRod(config, "Iron",    "minecraft:iron_ingot", "minecraft:redstone",                    "minecraft:gold_ore",     100, 6, false, 0,  0);
-        createDowsingRod(config, "Gold",    "minecraft:gold_ingot", "minecraft:dye;" + Constants.META_LAPIS, "minecraft:diamond_ore",  100, 8, false, 0,  0);
-        createDowsingRod(config, "Diamond", "minecraft:diamond",    "minecraft:emerald",                     "",                      1000, 8, true,  4, 16);
+        //                        name       base ingredient         tip ingredient                           target                 change |uses|radius|color|charge|upgrade cost|max radius
+        createDowsingRod(config, "Wood",    "minecraft:stick",      "minecraft:coal",                        "minecraft:iron_ore",    false,   50,     4, true, false,           0,         0);
+        createDowsingRod(config, "Iron",    "minecraft:iron_ingot", "minecraft:redstone",                    "minecraft:gold_ore",    false,  100,     6, true, false,           0,         0);
+        createDowsingRod(config, "Gold",    "minecraft:gold_ingot", "minecraft:dye;" + Constants.META_LAPIS, "minecraft:diamond_ore", false,  100,     8, true, false,           0,         0);
+        createDowsingRod(config, "Diamond", "minecraft:diamond",    "minecraft:emerald",                     "",                       true, 1000,     8, true,  true,           4,        16);
 
         for (DowsingRod rod : dowsingRods) {
             RegisterHelper.registerItem(rod);

@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 public class DowsingRod extends Item implements IEnergyContainerItem
 {
     private static final String BASE_NAME       = "DowsingRod";
+    // XXX config settings for these
     private static final int    DAMAGE_PER_USE  = 1;
     private static final float  RENDER_DURATION = 30.0F;
     private static final int    RF_PER_DAMAGE   = 3000;
@@ -33,8 +34,10 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     private static final String NBT_TARGET_BLOCK_METADATA = "block_metadata";
     private static final String NBT_NUM_UPGRADES          = "num_upgrades";
 
-    private final Block   forcedTargetBlock; // null for any ore
+    private final Block   initialTargetBlock; // null for any ore
+    private final boolean allowTargetChange;
     private final int     baseSquareRadius;
+    private final boolean showOreColor;
     private final boolean isChargeable;
     private final int     diamondsPerUpgrade;
     private final int     maxSquareRadius;
@@ -42,10 +45,16 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     public  final Object  ingredientTop;
 
     public DowsingRod(String parNamePrefix,
-            Object parIngredientBase, Object parIngredientTop,
-            Block parForcedTargetBlock,
-            int parMaxDamage, int parSquareRadius, boolean parIsChargeable,
-            int parDiamondsPerUpgrade, int parMaxSquareRadius)
+            Object parIngredientBase,
+            Object parIngredientTop,
+            Block parInitialTargetBlock,
+            boolean parAllowTargetChange,
+            int parMaxDamage,
+            int parSquareRadius,
+            boolean parShowOreColor,
+            boolean parIsChargeable,
+            int parDiamondsPerUpgrade,
+            int parMaxSquareRadius)
     {
         super();
         setUnlocalizedName(Reference.MODID + "_" + parNamePrefix + BASE_NAME);
@@ -54,8 +63,10 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         setMaxDamage(parMaxDamage);
         setCreativeTab(CreativeTabs.tabTools);
 
-        forcedTargetBlock  = parForcedTargetBlock;
+        initialTargetBlock = parInitialTargetBlock;
+        allowTargetChange  = parAllowTargetChange;
         baseSquareRadius   = parSquareRadius;
+        showOreColor       = parShowOreColor;
         isChargeable       = parIsChargeable;
         diamondsPerUpgrade = parDiamondsPerUpgrade;
         maxSquareRadius    = parMaxSquareRadius;
@@ -68,9 +79,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         if (stack.stackTagCompound == null) {
             stack.stackTagCompound= new NBTTagCompound();
         }
-        if (forcedTargetBlock != null) {
-            forceSetTarget(stack, forcedTargetBlock, 0, null);
-        }
+        forceSetTarget(stack, initialTargetBlock, 0, null);
         stack.stackTagCompound.setInteger(NBT_RADIUS, baseSquareRadius);
         stack.stackTagCompound.setInteger(NBT_NUM_UPGRADES, 0);
     }
@@ -156,7 +165,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
                             : StringHelper.localize("text.oredowsing.all_ores"))));
         list.add(String.format(StringHelper.localize("text.oredowsing.tooltip.1"),
                         1+2*getSquareRadius(stack)));
-        if (forcedTargetBlock == null) {
+        if (allowTargetChange) {
             list.add(StringHelper.localize("text.oredowsing.tooltip.2"));
         }
         if (isChargeable) {
@@ -197,7 +206,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
 
     public void setTarget(ItemStack stack, Block targetBlock, int metadata, EntityPlayer player)
     {
-        if (forcedTargetBlock != null) {
+        if (!allowTargetChange) {
             if (player != null) {
                 player.addChatMessage(new ChatComponentText(
                         StringHelper.localize("text.oredowsing.change_target.no")));
@@ -252,7 +261,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
                     if (blockMatches(comp_target_stack,
                                     new ItemStack(world.getBlock(x, y, z), 1,
                                             world.getBlockMetadata(x, y, z)))) {
-                        DowsingRodRenderer.addBlockToHighlight(new ChunkCoordinates(x, y, z), world, player, RENDER_DURATION);
+                        DowsingRodRenderer.addBlockToHighlight(new ChunkCoordinates(x, y, z), world, player, RENDER_DURATION, this.showOreColor);
                     }
                 }
             }

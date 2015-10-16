@@ -93,7 +93,7 @@ public final class DowsingRodRenderer {
             long renderUntilTime;
             int rgb;
 
-            public BlockToHighlight(ChunkCoordinates parPos, World parWorld, long parRenderUntilTime) {
+            public BlockToHighlight(ChunkCoordinates parPos, World parWorld, long parRenderUntilTime, boolean parShowOreColor) {
                 pos = parPos;
                 world = parWorld;
                 renderUntilTime = parRenderUntilTime;
@@ -101,7 +101,7 @@ public final class DowsingRodRenderer {
                 Block block = world.getBlock(pos.posX, pos.posY, pos.posZ);
                 int metadata = world.getBlockMetadata(pos.posX, pos.posY, pos.posZ);
                 String ore_name = ItemHelper.getOreName(new ItemStack(block, 1, metadata));
-                if (blockColor.containsKey(ore_name)) {
+                if (parShowOreColor && blockColor.containsKey(ore_name)) {
                     rgb = (Integer) blockColor.get(ore_name);
                 }
                 else {
@@ -112,10 +112,11 @@ public final class DowsingRodRenderer {
             }
     }
 
-    public static void addBlockToHighlight(ChunkCoordinates parPos, World parWorld, EntityPlayer parPlayer, float parRenderDuration) {
+    public static void addBlockToHighlight(ChunkCoordinates parPos, World parWorld, EntityPlayer parPlayer, float parRenderDuration, boolean parShowOreColor) {
         blocksToHighlight.put(parPos,
                 new DowsingRodRenderer.BlockToHighlight(parPos, parWorld,
-                            parWorld.getTotalWorldTime() + Math.round(Constants.TICKS_PER_SEC * parRenderDuration)
+                            parWorld.getTotalWorldTime() + Math.round(Constants.TICKS_PER_SEC * parRenderDuration),
+                            parShowOreColor
                         )
         );
     }
