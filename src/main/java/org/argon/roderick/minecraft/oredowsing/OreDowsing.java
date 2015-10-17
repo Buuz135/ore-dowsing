@@ -6,6 +6,7 @@ import net.minecraftforge.common.config.Configuration;
 
 import org.argon.roderick.minecraft.oredowsing.init.CommonProxy;
 import org.argon.roderick.minecraft.oredowsing.init.ModItems;
+import org.argon.roderick.minecraft.oredowsing.lib.Constants;
 import org.argon.roderick.minecraft.oredowsing.lib.Reference;
 
 import cpw.mods.fml.common.Mod;
@@ -25,6 +26,7 @@ public class OreDowsing {
 
         config.load();
         proxy.preInit(event);
+        Constants.preInit(event, config);
         ModItems.preInit(event, config);
         config.save();
     }

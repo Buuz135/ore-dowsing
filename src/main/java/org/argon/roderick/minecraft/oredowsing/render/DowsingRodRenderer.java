@@ -112,7 +112,7 @@ public final class DowsingRodRenderer {
             }
     }
 
-    public static void addBlockToHighlight(ChunkCoordinates parPos, World parWorld, EntityPlayer parPlayer, float parRenderDuration, boolean parShowOreColor) {
+    public static void addBlockToHighlight(ChunkCoordinates parPos, World parWorld, EntityPlayer parPlayer, double parRenderDuration, boolean parShowOreColor) {
         blocksToHighlight.put(parPos,
                 new DowsingRodRenderer.BlockToHighlight(parPos, parWorld,
                             parWorld.getTotalWorldTime() + Math.round(Constants.TICKS_PER_SEC * parRenderDuration),

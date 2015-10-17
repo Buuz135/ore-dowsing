@@ -2,6 +2,7 @@ package org.argon.roderick.minecraft.oredowsing.items;
 
 import java.util.List;
 
+import org.argon.roderick.minecraft.oredowsing.lib.Constants;
 import org.argon.roderick.minecraft.oredowsing.lib.Reference;
 import org.argon.roderick.minecraft.oredowsing.render.DowsingRodRenderer;
 
@@ -24,10 +25,6 @@ import net.minecraft.world.World;
 public class DowsingRod extends Item implements IEnergyContainerItem
 {
     private static final String BASE_NAME       = "DowsingRod";
-    // XXX config settings for these
-    private static final int    DAMAGE_PER_USE  = 1;
-    private static final float  RENDER_DURATION = 30.0F;
-    private static final int    RF_PER_DAMAGE   = 3000;
 
     private static final String NBT_RADIUS                = "radius";
     private static final String NBT_TARGET_BLOCK_ID       = "block_id";
@@ -253,7 +250,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
 
     public void divine(ItemStack stack, World world, EntityPlayer player)
     {
-        stack.damageItem(DAMAGE_PER_USE, player);
+        stack.damageItem(Constants.DAMAGE_PER_USE, player);
 
         if (!world.isRemote)
             return;
@@ -270,7 +267,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
                     if (blockMatches(comp_target_stack,
                                     new ItemStack(world.getBlock(x, y, z), 1,
                                             world.getBlockMetadata(x, y, z)))) {
-                        DowsingRodRenderer.addBlockToHighlight(new ChunkCoordinates(x, y, z), world, player, RENDER_DURATION, this.showOreColor);
+                        DowsingRodRenderer.addBlockToHighlight(new ChunkCoordinates(x, y, z), world, player, Constants.RENDER_DURATION, this.showOreColor);
                     }
                 }
             }
@@ -287,10 +284,10 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         }
 
         int cur_damage    = container.getItemDamage();
-        int energy_wanted = cur_damage * RF_PER_DAMAGE;
+        int energy_wanted = cur_damage * Constants.RF_PER_DAMAGE;
         int energy_taken  = Math.min(energy_wanted, maxReceive);
-        int damage_healed = energy_taken / RF_PER_DAMAGE;
-        energy_taken = damage_healed * RF_PER_DAMAGE; // adjust for maxReceive % RF_PER_DAMAGE != 0
+        int damage_healed = energy_taken / Constants.RF_PER_DAMAGE;
+        energy_taken = damage_healed * Constants.RF_PER_DAMAGE; // adjust for maxReceive % RF_PER_DAMAGE != 0
 
         if (!simulate) {
             container.setItemDamage(cur_damage - damage_healed);
@@ -318,7 +315,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     {
         // Energetic Infuser won't keep offering energy if this is 0
         return isChargeable
-                ? container.getItemDamage() * RF_PER_DAMAGE
+                ? container.getItemDamage() * Constants.RF_PER_DAMAGE
                 : 0;
 
     }
