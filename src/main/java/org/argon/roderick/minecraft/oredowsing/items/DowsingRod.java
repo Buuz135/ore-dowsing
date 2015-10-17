@@ -34,15 +34,16 @@ public class DowsingRod extends Item implements IEnergyContainerItem
     private static final String NBT_TARGET_BLOCK_METADATA = "block_metadata";
     private static final String NBT_NUM_UPGRADES          = "num_upgrades";
 
-    private final Block   initialTargetBlock; // null for any ore
-    private final boolean allowTargetChange;
-    private final int     baseSquareRadius;
-    private final boolean showOreColor;
-    private final boolean isChargeable;
-    private final int     diamondsPerUpgrade;
-    private final int     maxSquareRadius;
-    public  final Object  ingredientBase;
-    public  final Object  ingredientTop;
+    private final Block     initialTargetBlock; // null for any ore
+    private final boolean   allowTargetChange;
+    private final int       baseSquareRadius;
+    private final boolean   showOreColor;
+    private final boolean   isChargeable;
+    private final ItemStack upgradeItemStack;
+    private final int       itemsPerUpgrade;
+    private final int       maxSquareRadius;
+    public  final Object    ingredientBase;
+    public  final Object    ingredientTop;
 
     public DowsingRod(String parNamePrefix,
             Object parIngredientBase,
@@ -53,7 +54,8 @@ public class DowsingRod extends Item implements IEnergyContainerItem
             int parSquareRadius,
             boolean parShowOreColor,
             boolean parIsChargeable,
-            int parDiamondsPerUpgrade,
+            ItemStack parUpgradeItemStack,
+            int parItemsPerUpgrade,
             int parMaxSquareRadius)
     {
         super();
@@ -68,7 +70,8 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         baseSquareRadius   = parSquareRadius;
         showOreColor       = parShowOreColor;
         isChargeable       = parIsChargeable;
-        diamondsPerUpgrade = parDiamondsPerUpgrade;
+        upgradeItemStack   = parUpgradeItemStack;
+        itemsPerUpgrade    = parItemsPerUpgrade;
         maxSquareRadius    = parMaxSquareRadius;
         ingredientBase     = parIngredientBase;
         ingredientTop      = parIngredientTop;
@@ -105,9 +108,14 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         return this.addUpgrade(stack, 1);
     }
 
-    public int getDiamondsPerUpgrade()
+    public ItemStack getUpgradeItemStack(ItemStack stack)
     {
-        return diamondsPerUpgrade;
+        return this.upgradeItemStack;
+    }
+
+    public int getItemsPerUpgrade(ItemStack stack)
+    {
+        return this.itemsPerUpgrade;
     }
 
     public int getMaxSquareRadius()
@@ -173,8 +181,9 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         }
         if (this.canUpgrade(stack, 1)) {
             list.add(String.format(StringHelper.localize(
-                            "text.oredowsing.tooltip.4." + (diamondsPerUpgrade == 1 ? "s" : "p")),
-                            diamondsPerUpgrade));
+                            "text.oredowsing.tooltip.4." + (itemsPerUpgrade == 1 ? "s" : "p")),
+                            itemsPerUpgrade,
+                            upgradeItemStack.getDisplayName()));
         }
     }
 
