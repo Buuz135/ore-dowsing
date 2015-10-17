@@ -1,6 +1,9 @@
 Change Log
 ==========
 
+- version 0.7  TBD
+    - add configuration file
+
 - version 0.6  2015-10-02
     - correct another multiplayer crash, this time on server
       ("NoClassDefFoundError: org/lwjgl/input/Keyboard")
