@@ -11,8 +11,7 @@ Requirements
 ============
 
 - Minecraft, version 1.7.10
-- [Minecraft Forge](http://files.minecraftforge.net/), version 10.13.2.1291
-- [CoFHLib](http://minecraft.curseforge.com/mc-mods/220333-cofhlib), version 1.0.2-160
+- [Minecraft Forge](http://files.minecraftforge.net/), version 10.13.4.1448
 
 [Download](https://github.com/rosche/ore-dowsing/releases/latest)
 ==========

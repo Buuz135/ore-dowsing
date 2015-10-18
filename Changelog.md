@@ -1,8 +1,9 @@
 Change Log
 ==========
 
-- version 0.7  TBD
+- version 0.7  2015-10-18
     - add configuration file
+    - remove dependence on CoFHLib
 
 - version 0.6  2015-10-02
     - correct another multiplayer crash, this time on server
