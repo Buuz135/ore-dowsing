@@ -1,9 +1,13 @@
 package org.argon.roderick.minecraft.oredowsing;
 
+import java.io.File;
+
 import org.argon.roderick.minecraft.oredowsing.init.CommonProxy;
 import org.argon.roderick.minecraft.oredowsing.init.ModItems;
+import org.argon.roderick.minecraft.oredowsing.lib.Constants;
 import org.argon.roderick.minecraft.oredowsing.lib.Reference;
 
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
@@ -17,8 +21,13 @@ public class OreDowsing {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+        Configuration config = new Configuration(new File(event.getModConfigurationDirectory(), Reference.CONFIG_FILE));
+
+        config.load();
         proxy.preInit(event);
-        ModItems.preInit(event);
+        Constants.preInit(event, config);
+        ModItems.preInit(event, config);
+        config.save();
     }
 
     @Mod.EventHandler

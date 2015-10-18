@@ -95,35 +95,35 @@ public final class DowsingRodRenderer {
             long renderUntilTime;
             int rgb;
 
-            public BlockToHighlight(BlockPos parPos, World parWorld, long parRenderUntilTime) {
-                pos = parPos;
-                world = parWorld;
-                renderUntilTime = parRenderUntilTime;
+            public BlockToHighlight(BlockPos parPos, World parWorld, long parRenderUntilTime, boolean parShowOreColor) {
+                this.pos = parPos;
+                this.world = parWorld;
+                this.renderUntilTime = parRenderUntilTime;
+                this.rgb = -1;
 
-                Block block = world.getBlockState(pos).getBlock();
-                //int metadata = world.getBlockMetadata(pos);
-                //int metadata = block.getDamageValue(world, pos);
-                int ore_ids[] = OreDictionary.getOreIDs(new ItemStack(block));
-                rgb = -1;
-                for (int i = 0; i < ore_ids.length; i++) {
-                	String ore_name = OreDictionary.getOreName(ore_ids[i]);
-                    if (blockColor.containsKey(ore_name)) {
-                        rgb = (Integer) blockColor.get(ore_name);
-                        break;
+                if (parShowOreColor) {
+                    Block block = world.getBlockState(pos).getBlock();
+                    // XXX need metadata handling
+                    //int metadata = world.getBlockMetadata(pos);
+                    //int metadata = block.getDamageValue(world, pos);
+                    int ore_ids[] = OreDictionary.getOreIDs(new ItemStack(block));
+                    for (int i = 0; i < ore_ids.length; i++) {
+                        String ore_name = OreDictionary.getOreName(ore_ids[i]);
+                        if (blockColor.containsKey(ore_name)) {
+                            this.rgb = (Integer) blockColor.get(ore_name);
+                            break;
+                        }
                     }
                 }
-                if (rgb == -1) {
-                    //System.out.println("no color for " + ore_name + " from " + block);
-                }
-
             }
     }
 
-    public static void addBlockToHighlight(BlockPos parPos, World parWorld, EntityPlayer parPlayer, float parRenderDuration) {
+    public static void addBlockToHighlight(BlockPos parPos, World parWorld, EntityPlayer parPlayer, double parRenderDuration, boolean parShowOreColor) {
     	//System.out.println("highlight " + parPos);
         blocksToHighlight.put(parPos,
                 new DowsingRodRenderer.BlockToHighlight(parPos, parWorld,
-                            parWorld.getTotalWorldTime() + Math.round(Constants.TICKS_PER_SEC * parRenderDuration)
+                            parWorld.getTotalWorldTime() + Math.round(Constants.TICKS_PER_SEC * parRenderDuration),
+                            parShowOreColor
                         )
         );
     }

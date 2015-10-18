@@ -16,8 +16,7 @@ Minecraft 1.8 version:
 
 Minecraft 1.7.10 version:
 - [Minecraft Forge](http://files.minecraftforge.net/), built/tested with
-  version 10.13.2.1291
-- [CoFHLib](http://minecraft.curseforge.com/mc-mods/220333-cofhlib), version 1.0.2-160
+  version 10.13.4.1448
 
 [Download](http://minecraft.curseforge.com/mc-mods/232695-ore-dowsing/files/latest)
 ==========

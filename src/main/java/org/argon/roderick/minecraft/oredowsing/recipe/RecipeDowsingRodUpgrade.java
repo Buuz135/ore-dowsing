@@ -2,7 +2,6 @@ package org.argon.roderick.minecraft.oredowsing.recipe;
 
 import org.argon.roderick.minecraft.oredowsing.items.DowsingRod;
 
-import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -13,51 +12,66 @@ public class RecipeDowsingRodUpgrade implements IRecipe {
     private class ParsedRecipe {
         ItemStack dowsingRodStack;
         DowsingRod dowsingRodItem;
-        int numDiamonds;
         int numUpgrades;
 
         private ParsedRecipe()
         {
-            numDiamonds = 0;
-            numUpgrades = 0;
+            this.numUpgrades = 0;
         }
 
         private boolean parseRecipe(InventoryCrafting inv_crafting)
         {
-            for (int i = 0; i < inv_crafting.getSizeInventory(); i++) {
+            int i;
+
+            // find dowsing rod
+
+            int dowsing_rod_slot = -1;
+            for (i = 0; i < inv_crafting.getSizeInventory(); i++) {
                 ItemStack stack = inv_crafting.getStackInSlot(i);
                 if (stack == null) {
                     continue;
                 }
                 else if (stack.getItem() instanceof DowsingRod) {
-                    if (dowsingRodStack != null)
-                        return false;
-                    dowsingRodStack = stack;
-                    dowsingRodItem = (DowsingRod) dowsingRodStack.getItem();
+                    dowsing_rod_slot = i;
+                    this.dowsingRodStack = stack;
+                    break;
                 }
-                else if (stack.getItem() == Items.diamond) {
-                    numDiamonds++;
+            }
+            if (dowsing_rod_slot == -1) {
+                return false;
+            }
+
+            // count upgrade items in crafting grid
+
+            this.dowsingRodItem = (DowsingRod) this.dowsingRodStack.getItem();
+            int items_per_upgrade = this.dowsingRodItem.getItemsPerUpgrade(this.dowsingRodStack);
+            if (items_per_upgrade < 1) {
+                return false;
+            }
+            ItemStack upgrade_stack = this.dowsingRodItem.getUpgradeItemStack(this.dowsingRodStack);
+            int num_items = 0;
+
+            for (i = 0; i < inv_crafting.getSizeInventory(); i++) {
+                if (i == dowsing_rod_slot) {
+                    continue;
+                }
+                ItemStack stack = inv_crafting.getStackInSlot(i);
+                if (stack == null) {
+                    continue;
+                }
+                else if (stack.isItemEqual(upgrade_stack)) {
+                    num_items++;
                 }
                 else {
                     return false;
                 }
             }
-            if (dowsingRodStack == null || numDiamonds == 0) {
+            if (num_items == 0 || num_items % items_per_upgrade != 0) {
                 return false;
             }
 
-            int diamonds_per_upgrade = dowsingRodItem.getDiamondsPerUpgrade();
-            if (diamonds_per_upgrade == 0 || numDiamonds % diamonds_per_upgrade != 0) {
-                return false;
-            }
-
-            numUpgrades = numDiamonds / diamonds_per_upgrade;
-            if (dowsingRodItem.getNumUpgrades(dowsingRodStack) + numUpgrades
-                    > dowsingRodItem.getMaxUpgrades()) {
-                return false;
-            }
-
-            return true;
+            this.numUpgrades = num_items / items_per_upgrade;
+            return this.dowsingRodItem.canUpgrade(this.dowsingRodStack, this.numUpgrades);
         }
     }
 
@@ -76,7 +90,7 @@ public class RecipeDowsingRodUpgrade implements IRecipe {
             return null;
 
         ItemStack ret_stack = parsed.dowsingRodStack.copy();
-        parsed.dowsingRodItem.addUpgrade(ret_stack,  parsed.numUpgrades);
+        parsed.dowsingRodItem.addUpgrade(ret_stack, parsed.numUpgrades);
         return ret_stack;
     }
 
