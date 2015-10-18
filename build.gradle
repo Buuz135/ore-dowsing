@@ -45,6 +45,9 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
+    // CoFHLib is for optional RF API
+    compile files("libs/CoFHLib-[1.7.10]1.0.4B1-176-dev.jar")
+
 }
 
 processResources

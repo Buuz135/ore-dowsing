@@ -4,12 +4,10 @@ import java.util.List;
 
 import org.argon.roderick.minecraft.oredowsing.lib.Constants;
 import org.argon.roderick.minecraft.oredowsing.lib.Reference;
+import org.argon.roderick.minecraft.oredowsing.lib.cofhDummy;
 import org.argon.roderick.minecraft.oredowsing.render.DowsingRodRenderer;
 
 import cofh.api.energy.IEnergyContainerItem;
-import cofh.lib.inventory.ComparableItemStackSafe;
-import cofh.lib.util.helpers.ItemHelper;
-import cofh.lib.util.helpers.StringHelper;
 import cpw.mods.fml.common.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
@@ -165,19 +163,19 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         }
 
         ItemStack target_stack = getTargetStack(stack);
-        list.add(String.format(StringHelper.localize("text.oredowsing.tooltip.0"),
+        list.add(String.format(cofhDummy.localize("text.oredowsing.tooltip.0"),
                         (target_stack != null ? target_stack.getDisplayName()
-                            : StringHelper.localize("text.oredowsing.all_ores"))));
-        list.add(String.format(StringHelper.localize("text.oredowsing.tooltip.1"),
+                            : cofhDummy.localize("text.oredowsing.all_ores"))));
+        list.add(String.format(cofhDummy.localize("text.oredowsing.tooltip.1"),
                         1+2*getSquareRadius(stack)));
         if (allowTargetChange) {
-            list.add(StringHelper.localize("text.oredowsing.tooltip.2"));
+            list.add(cofhDummy.localize("text.oredowsing.tooltip.2"));
         }
         if (isChargeable) {
-            list.add(StringHelper.localize("text.oredowsing.tooltip.3"));
+            list.add(cofhDummy.localize("text.oredowsing.tooltip.3"));
         }
         if (this.canUpgrade(stack, 1)) {
-            list.add(String.format(StringHelper.localize(
+            list.add(String.format(cofhDummy.localize(
                             "text.oredowsing.tooltip.4." + (itemsPerUpgrade == 1 ? "s" : "p")),
                             itemsPerUpgrade,
                             upgradeItemStack.getDisplayName()));
@@ -215,7 +213,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         if (!allowTargetChange) {
             if (player != null) {
                 player.addChatMessage(new ChatComponentText(
-                        StringHelper.localize("text.oredowsing.change_target.no")));
+                        cofhDummy.localize("text.oredowsing.change_target.no")));
             }
             return;
         }
@@ -232,20 +230,22 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         stack.stackTagCompound.setInteger(NBT_TARGET_BLOCK_METADATA, metadata);
         if (player != null) {
             player.addChatMessage(new ChatComponentText(String.format(
-                    StringHelper.localize("text.oredowsing.change_target.yes"),
+                    cofhDummy.localize("text.oredowsing.change_target.yes"),
                     (targetBlock == null
-                        ? StringHelper.localize("text.oredowsing.all_ores")
+                        ? cofhDummy.localize("text.oredowsing.all_ores")
                         : new ItemStack(targetBlock, 1, metadata).getDisplayName()))));
         }
     }
 
-    public boolean blockMatches(ComparableItemStackSafe comp_target_stack, ItemStack world_stack)
+    public boolean blockMatches(ItemStack target_stack, ItemStack world_stack)
     {
-        return (comp_target_stack != null)
+        return (target_stack != null)
                 // detect specific block
-                ? comp_target_stack.isItemEqual(new ComparableItemStackSafe(world_stack))
+                // XXX use ore dictionary, but only if you can limit it to 
+                // things like oreCopper, not different kinds of planks
+                ? target_stack.isItemEqual(world_stack)
                 // detect any ore
-                : ItemHelper.isOre(world_stack);
+                : cofhDummy.isOre(world_stack);
     }
 
     public void divine(ItemStack stack, World world, EntityPlayer player)
@@ -256,15 +256,12 @@ public class DowsingRod extends Item implements IEnergyContainerItem
             return;
 
         ItemStack target_stack = getTargetStack(stack);
-        ComparableItemStackSafe comp_target_stack = (target_stack != null)
-                ? (new ComparableItemStackSafe(target_stack))
-                : null;
         int r = getSquareRadius(stack);
         int x, y, z;
         for (x = (int)player.posX - r; x <= player.posX + r; x++) {
             for (y = (int)player.posY - r; y <= player.posY + r; y++) {
                 for (z = (int)player.posZ - r; z <= player.posZ + r; z++) {
-                    if (blockMatches(comp_target_stack,
+                    if (blockMatches(target_stack,
                                     new ItemStack(world.getBlock(x, y, z), 1,
                                             world.getBlockMetadata(x, y, z)))) {
                         DowsingRodRenderer.addBlockToHighlight(new ChunkCoordinates(x, y, z), world, player, Constants.RENDER_DURATION, this.showOreColor);

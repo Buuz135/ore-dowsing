@@ -29,11 +29,11 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.oredict.OreDictionary;
 
 import org.argon.roderick.minecraft.oredowsing.lib.Constants;
 import org.lwjgl.opengl.GL11;
 
-import cofh.lib.util.helpers.ItemHelper;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public final class DowsingRodRenderer {
@@ -94,21 +94,23 @@ public final class DowsingRodRenderer {
             int rgb;
 
             public BlockToHighlight(ChunkCoordinates parPos, World parWorld, long parRenderUntilTime, boolean parShowOreColor) {
-                pos = parPos;
-                world = parWorld;
-                renderUntilTime = parRenderUntilTime;
+                this.pos = parPos;
+                this.world = parWorld;
+                this.renderUntilTime = parRenderUntilTime;
+                this.rgb = -1;
 
-                Block block = world.getBlock(pos.posX, pos.posY, pos.posZ);
-                int metadata = world.getBlockMetadata(pos.posX, pos.posY, pos.posZ);
-                String ore_name = ItemHelper.getOreName(new ItemStack(block, 1, metadata));
-                if (parShowOreColor && blockColor.containsKey(ore_name)) {
-                    rgb = (Integer) blockColor.get(ore_name);
+                if (parShowOreColor) {
+                    Block block = world.getBlock(pos.posX, pos.posY, pos.posZ);
+                    int metadata = world.getBlockMetadata(pos.posX, pos.posY, pos.posZ);
+                    int ore_ids[] = OreDictionary.getOreIDs(new ItemStack(block, 1, metadata));
+                    for (int i = 0; i < ore_ids.length; i++) {
+                        String ore_name = OreDictionary.getOreName(ore_ids[i]);
+                        if (blockColor.containsKey(ore_name)) {
+                            this.rgb = (Integer) blockColor.get(ore_name);
+                            break;
+                        }
+                    }
                 }
-                else {
-                    rgb = -1;
-                    //System.out.println("no color for " + ore_name + " from " + block);
-                }
-
             }
     }
 
