@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.argon.roderick.minecraft.oredowsing.items.DowsingRod;
 import org.argon.roderick.minecraft.oredowsing.lib.Constants;
+import org.argon.roderick.minecraft.oredowsing.lib.Helper;
 import org.argon.roderick.minecraft.oredowsing.lib.RegisterHelper;
 import org.argon.roderick.minecraft.oredowsing.recipe.RecipeDowsingRodUpgrade;
 
@@ -81,18 +82,18 @@ public class ModItems
 
         boolean enabled            = myconf.get("enabled",                   true                    , "false to disable this dowsing rod completely");
         ItemStack ingredientBase   =
-                   getStackForString(myconf.get("ingredient_base",           parIngredientBaseName   , "main crafting ingredient"));
+            Helper.getStackForString(myconf.get("ingredient_base",           parIngredientBaseName   , "main crafting ingredient"));
         ItemStack ingredientTop    =
-                   getStackForString(myconf.get("ingredient_tip",            parIngredientTopName    , "crafting ingredient for tip"));
+            Helper.getStackForString(myconf.get("ingredient_tip",            parIngredientTopName    , "crafting ingredient for tip"));
         Block   forcedTargetBlock  =
-                   getBlockForString(myconf.get("target_block",              parForcedTargetBlockName, "block detected, empty for all ores"));
+            Helper.getBlockForString(myconf.get("target_block",              parForcedTargetBlockName, "block detected, empty for all ores"));
         boolean allowTargetChange  = myconf.get("allow_target_block_change", parAllowTargetChange    , "true to allow changing which block is detected");
         int     maxDamage          = myconf.get("num_uses",                  parMaxDamage            , "number of uses");
         int     squareRadius       = myconf.get("radius_base",               parSquareRadius         , "detection area is 1+2*radius cube");
         boolean showOreColor       = myconf.get("show_ore_color",            parShowOreColor         , "true to color detected ores by type");
         boolean isChargeable       = myconf.get("is_chargeable",             parIsChargeable         , "true to allow repairing with RF");
         ItemStack upgradeItem      =
-                   getStackForString(myconf.get("upgrade_item",              parUpgradeItemName      , "crafting ingredient used to upgrade radius"));
+            Helper.getStackForString(myconf.get("upgrade_item",              parUpgradeItemName      , "crafting ingredient used to upgrade radius"));
         int     itemsPerUpgrade    = myconf.get("upgrade_item_count",        parItemsPerUpgrade      , "number of upgrade items required to increase radius by 1");
         int     maxSquareRadius    = myconf.get("radius_max",                parMaxSquareRadius      , "maximum upgraded radius, 0 if not upgradeable");
 
@@ -141,28 +142,6 @@ public class ModItems
         }
 
         GameRegistry.addRecipe(new RecipeDowsingRodUpgrade());
-    }
-
-    // cribbed from EnderIO
-
-    public static ItemStack getStackForString(String s) {
-        String[] nameAndMeta = s.split(";");
-        int meta = nameAndMeta.length == 1 ? 0 : Integer.parseInt(nameAndMeta[1]);
-        String[] data = nameAndMeta[0].split(":");
-        if (data.length < 2) {
-            return null;
-        }
-        ItemStack stack = GameRegistry.findItemStack(data[0], data[1], 1);
-        if(stack == null) {
-            return null;
-        }
-        stack.setItemDamage(meta);
-        return stack;
-    }
-
-    public static Block getBlockForString(String s) {
-        String[] data = s.split(":");
-        return data.length < 2 ? null : GameRegistry.findBlock(data[0], data[1]);
     }
 
 }
