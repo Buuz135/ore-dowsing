@@ -1,13 +1,21 @@
 Change Log
 ==========
 
+- version 0.8  TBD
+    - new textures/models for the dowsing rods, many thanks to Yoshidude
+
 - version 0.7  2015-10-18
     - add configuration file
-    - remove dependence on CoFHLib
+    - 1.7.10 version no longer depends on CoFHLib (had to reimplement
+      the functions I was using for 1.8 anyway)
 
 - version 0.6  2015-10-02
     - correct another multiplayer crash, this time on server
       ("NoClassDefFoundError: org/lwjgl/input/Keyboard")
+
+- version 0.5  2015-09-26
+    - update for Minecraft 1.8
+    - 1.8 version no longer depends on CofHLib (doesn't exist for 1.8)
 
 - version 0.4  2015-09-07
     - oops, correct crash on client in multiplayer

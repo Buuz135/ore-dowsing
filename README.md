@@ -30,8 +30,10 @@ Requirements
 
 Thanks
 ======
-Thanks to Vazkii, the code on which the block highlighting is based is from
-[Botania](http://botaniamod.net).
+Thanks to Vazkii, the code on which the block highlighting is based on
+is from [Botania](http://botaniamod.net).
+
+Thanks to Yoshidude for the dowsing rod textures and models.
 
 License
 =======
