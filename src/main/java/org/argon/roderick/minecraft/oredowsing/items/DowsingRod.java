@@ -3,6 +3,7 @@ package org.argon.roderick.minecraft.oredowsing.items;
 import java.util.List;
 
 import org.argon.roderick.minecraft.oredowsing.lib.Constants;
+import org.argon.roderick.minecraft.oredowsing.lib.Helper;
 import org.argon.roderick.minecraft.oredowsing.lib.Reference;
 import org.argon.roderick.minecraft.oredowsing.lib.cofhDummy;
 import org.argon.roderick.minecraft.oredowsing.render.DowsingRodRenderer;
@@ -164,8 +165,17 @@ public class DowsingRod extends Item implements IEnergyContainerItem
 
         ItemStack target_stack = getTargetStack(stack);
         list.add(String.format(cofhDummy.localize("text.oredowsing.tooltip.0"),
-                        (target_stack != null ? target_stack.getDisplayName()
-                            : cofhDummy.localize("text.oredowsing.all_ores"))));
+                target_stack != null
+                    ? Helper.wrappedGetDisplayName(target_stack)
+                    : cofhDummy.localize("text.oredowsing.all_ores")));
+        if (cofhDummy.isShiftKeyDown() && target_stack != null) {
+            try {
+                list.add(target_stack.toString());
+            }
+            catch (Exception e) {
+                // fails for sugar cane
+            }
+        }
         list.add(String.format(cofhDummy.localize("text.oredowsing.tooltip.1"),
                         1+2*getSquareRadius(stack)));
         if (allowTargetChange) {
@@ -178,7 +188,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
             list.add(String.format(cofhDummy.localize(
                             "text.oredowsing.tooltip.4." + (itemsPerUpgrade == 1 ? "s" : "p")),
                             itemsPerUpgrade,
-                            upgradeItemStack.getDisplayName()));
+                            Helper.wrappedGetDisplayName(upgradeItemStack)));
         }
     }
 
@@ -233,7 +243,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
                     cofhDummy.localize("text.oredowsing.change_target.yes"),
                     (targetBlock == null
                         ? cofhDummy.localize("text.oredowsing.all_ores")
-                        : new ItemStack(targetBlock, 1, metadata).getDisplayName()))));
+                        : Helper.wrappedGetDisplayName(new ItemStack(targetBlock, 1, metadata))))));
         }
     }
 

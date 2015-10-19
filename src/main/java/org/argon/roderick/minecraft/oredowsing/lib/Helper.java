@@ -27,4 +27,21 @@ public class Helper {
         return data.length != 2 ? null : GameRegistry.findBlock(data[0], data[1]);
     }
 
+    public static String wrappedGetDisplayName(ItemStack is) {
+        String desc;
+        try {
+            desc = is.getDisplayName();
+        }
+        catch (NullPointerException e) {
+            // this happens when selecting sugar cane regardless of
+            // metadata (age), I don't know why
+            try {
+                desc = is.toString();
+            }
+            catch (NullPointerException e2) {
+                desc = "???";
+            }
+        }
+        return desc;
+    }
 }
