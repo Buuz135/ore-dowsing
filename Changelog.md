@@ -2,7 +2,8 @@ Change Log
 ==========
 
 - version 0.8  TBD
-    - new textures/models for the dowsing rods, many thanks to Yoshidude
+    - new sprites for the dowsing rods, many thanks to Yoshidude
+    - avoid crash when selecting sugar cane
 
 - version 0.7  2015-10-18
     - add configuration file
