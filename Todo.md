@@ -3,7 +3,6 @@ Plans/to do:
 
 - net.minecraftforge.oredict.RecipeSorter
 - move Todo items to Github/issues
-- selecting sugar cane crashes game
 - add screenshot using it to highlight a pipe system
 - sound when finding something?  (only in auto-scan mode?)
 - improvements for diamond dowsing rod
