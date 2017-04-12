@@ -23,17 +23,22 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
 import org.argon.roderick.minecraft.oredowsing.lib.Constants;
+import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL11;
 
 // XXX store colors as Color objects not ints
@@ -151,7 +156,7 @@ public final class DowsingRodRenderer {
             long cur_time = blockToHighlight.world.getTotalWorldTime();
 
             if (blockToHighlight.renderUntilTime < cur_time
-                    || blockToHighlight.world.provider.getDimensionId() != Minecraft.getMinecraft().theWorld.provider.getDimensionId()
+                    || blockToHighlight.world.provider.getDimension() != Minecraft.getMinecraft().world.provider.getDimension()
                     // XXX handle any replacement rather than just air
                     || blockToHighlight.world.isAirBlock(keyPos)
                     ) {
@@ -176,7 +181,7 @@ public final class DowsingRodRenderer {
     private void renderBlockOutlineAt(BlockPos pos, int color, float thickness) {
         GlStateManager.pushMatrix();
 
-        EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+        EntityPlayerSP player = Minecraft.getMinecraft().player;
         GlStateManager.translate(
         		pos.getX() - player.posX,
         		pos.getY() - player.posY,
@@ -184,7 +189,7 @@ public final class DowsingRodRenderer {
 
         Color colorRGB = new Color(color);
 
-        World world = Minecraft.getMinecraft().theWorld;
+        World world = Minecraft.getMinecraft().world;
         Block block = world.getBlockState(pos).getBlock();
        drawWireframe : {
             if (block != null) {
@@ -193,7 +198,7 @@ public final class DowsingRodRenderer {
                 //if(block instanceof IWireframeAABBProvider)
                 //  axis = ((IWireframeAABBProvider) block).getWireframeAABB(world, pos.getX(), pos.getY(), pos.getZ());
                 //else
-                    axis = block.getSelectedBoundingBox(world, pos);
+                    axis = block.getSelectedBoundingBox(world.getBlockState(pos),world, pos);
 
                 if (axis == null)
                     break drawWireframe;
@@ -219,58 +224,53 @@ public final class DowsingRodRenderer {
         GlStateManager.popMatrix();
     }
 
+
     private void renderBlockOutline(AxisAlignedBB aabb) {
         Tessellator tess = Tessellator.getInstance();
-        WorldRenderer wr = tess.getWorldRenderer();
 
-        double ix = aabb.minX;
-        double iy = aabb.minY;
-        double iz = aabb.minZ;
-        double ax = aabb.maxX;
-        double ay = aabb.maxY;
-        double az = aabb.maxZ;
-        
+        float ix = (float) aabb.minX;
+        float iy = (float) aabb.minY;
+        float iz = (float) aabb.minZ;
+        float ax = (float) aabb.maxX;
+        float ay = (float) aabb.maxY;
+        float az = (float) aabb.maxZ;
+
+        double xa = aabb.minX;
+        double xb = aabb.maxX;
+        double ya = aabb.minY;
+        double yb = aabb.maxY;
+        double za = aabb.minZ;
+        double zb = aabb.maxZ;
+
         //System.out.println("outline " + ix + "," + iy + "," + iz + " - " + ax + "," + ay + "," + az);
+        tess.getBuffer().begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+        tess.getBuffer().pos(xa, ya, za).endVertex();
+        tess.getBuffer().pos(xa, yb, za).endVertex();
+        tess.getBuffer().pos(xb, yb, za).endVertex();
+        tess.getBuffer().pos(xb, ya, za).endVertex();
+        tess.getBuffer().pos(xa, ya, za).endVertex();
 
-        wr.startDrawing(GL11.GL_LINES);
+        tess.getBuffer().pos(xa, ya, zb).endVertex();
+        tess.getBuffer().pos(xa, yb, zb).endVertex();
+        tess.getBuffer().pos(xb, yb, zb).endVertex();
+        tess.getBuffer().pos(xb, ya, zb).endVertex();
+        tess.getBuffer().pos(xa, ya, zb).endVertex();
+        tess.draw();
 
-        wr.addVertex(ix, iy, iz);
-        wr.addVertex(ix, ay, iz);
 
-        wr.addVertex(ix, ay, iz);
-        wr.addVertex(ax, ay, iz);
+        tess.getBuffer().begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+        tess.getBuffer().pos(xa, yb, za).endVertex();
+        tess.getBuffer().pos(xa, yb, zb).endVertex();
 
-        wr.addVertex(ax, ay, iz);
-        wr.addVertex(ax, iy, iz);
 
-        wr.addVertex(ax, iy, iz);
-        wr.addVertex(ix, iy, iz);
+        tess.getBuffer().pos(xb, ya, za).endVertex();
+        tess.getBuffer().pos(xb, ya, zb).endVertex();
 
-        wr.addVertex(ix, iy, az);
-        wr.addVertex(ix, ay, az);
-
-        wr.addVertex(ix, iy, az);
-        wr.addVertex(ax, iy, az);
-
-        wr.addVertex(ax, iy, az);
-        wr.addVertex(ax, ay, az);
-
-        wr.addVertex(ix, ay, az);
-        wr.addVertex(ax, ay, az);
-
-        wr.addVertex(ix, iy, iz);
-        wr.addVertex(ix, iy, az);
-
-        wr.addVertex(ix, ay, iz);
-        wr.addVertex(ix, ay, az);
-
-        wr.addVertex(ax, iy, iz);
-        wr.addVertex(ax, iy, az);
-
-        wr.addVertex(ax, ay, iz);
-        wr.addVertex(ax, ay, az);
+        tess.getBuffer().pos(xb, yb, za).endVertex();
+        tess.getBuffer().pos(xb, yb, zb).endVertex();
 
         tess.draw();
+
     }
     
 }

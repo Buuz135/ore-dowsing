@@ -2,13 +2,15 @@ package org.argon.roderick.minecraft.oredowsing.items;
 
 import java.util.List;
 
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import org.argon.roderick.minecraft.oredowsing.lib.Constants;
 import org.argon.roderick.minecraft.oredowsing.lib.Reference;
 import org.argon.roderick.minecraft.oredowsing.lib.cofhDummy;
 import org.argon.roderick.minecraft.oredowsing.render.DowsingRodRenderer;
-
-import cofh.api.energy.IEnergyContainerItem;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -16,14 +18,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 
-@Optional.Interface(modid = "CoFHAPI|energy", iface = "cofh.api.energy.IEnergyContainerItem")
-public class DowsingRod extends Item implements IEnergyContainerItem
-{
+
+public class DowsingRod extends Item  {
     private static final String BASE_NAME       = "DowsingRod";
 
     private static final String NBT_RADIUS                = "radius";
@@ -73,7 +72,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         setUnlocalizedName(Reference.MODID + "_" + name);
         setMaxStackSize(1);
         setMaxDamage(parMaxDamage);
-        setCreativeTab(CreativeTabs.tabTools);
+        setCreativeTab(CreativeTabs.TOOLS);
     }
 
     public String getName()
@@ -196,36 +195,35 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         }
     }
 
+
     @Override
-    public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player)
-    {
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand handIn) {
         if (player.isSneaking()) {
-            setTarget(stack, null, world.isRemote ? null : player);
+            setTarget(player.getHeldItem(handIn), null, world.isRemote ? null : player);
+        } else {
+            divine(player.getHeldItem(handIn), world, player);
         }
-        else {
-            divine(stack, world, player);
-        }
-        return stack;
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS,player.getHeldItem(handIn));
     }
 
     @Override
-    public boolean onItemUse(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
-    {
+    public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (player.isSneaking()) {
-            setTarget(stack, world.getBlockState(pos), world.isRemote ? null : player);
+            setTarget(player.getHeldItem(hand), world.getBlockState(pos), world.isRemote ? null : player);
         }
         else {
-            divine(stack, world, player);
+            divine(player.getHeldItem(hand), world, player);
         }
-        return true;
+        return EnumActionResult.SUCCESS;
     }
+
+
 
     public void setTarget(ItemStack stack, IBlockState targetBlockState, EntityPlayer player)
     {
         if (!allowTargetChange) {
             if (player != null) {
-                player.addChatMessage(new ChatComponentText(
-                        cofhDummy.localize("text.oredowsing.change_target.no")));
+                player.sendMessage(new TextComponentString(cofhDummy.localize("text.oredowsing.change_target.no")));
             }
             return;
         }
@@ -240,7 +238,7 @@ public class DowsingRod extends Item implements IEnergyContainerItem
         stack.getTagCompound().setInteger(NBT_TARGET_BLOCK_ID,       targetBlockId);
         stack.getTagCompound().setInteger(NBT_TARGET_BLOCK_METADATA, targetBlockMeta);
         if (player != null) {
-            player.addChatMessage(new ChatComponentText(String.format(
+            player.sendMessage(new TextComponentString(String.format(
                     cofhDummy.localize("text.oredowsing.change_target.yes"),
                     (targetBlockId == 0
                         ? cofhDummy.localize("text.oredowsing.all_ores")
@@ -296,54 +294,6 @@ public class DowsingRod extends Item implements IEnergyContainerItem
                 }
             }
         }
-    }
-
-    // RF interface --------------------------------------------------------
-    
-    // XXX test RF recharging with 1.8
-
-    @Override
-    public int receiveEnergy(ItemStack container, int maxReceive, boolean simulate)
-    {
-        if (!isChargeable) {
-            return 0;
-        }
-
-        int cur_damage    = container.getItemDamage();
-        int energy_wanted = cur_damage * Constants.RF_PER_DAMAGE;
-        int energy_taken  = Math.min(energy_wanted, maxReceive);
-        int damage_healed = energy_taken / Constants.RF_PER_DAMAGE;
-        energy_taken = damage_healed * Constants.RF_PER_DAMAGE; // adjust for maxReceive % RF_PER_DAMAGE != 0
-
-        if (!simulate) {
-            container.setItemDamage(cur_damage - damage_healed);
-        }
-        //System.out.println("max energy=" + maxReceive
-        //      + " energy_taken=" + energy_taken
-        //      + " damage_healed=" + damage_healed);
-        return energy_taken;
-    }
-
-    @Override
-    public int extractEnergy(ItemStack container, int maxExtract, boolean simulate)
-    {
-        return 0;
-    }
-
-    @Override
-    public int getEnergyStored(ItemStack container)
-    {
-        return 0;
-    }
-
-    @Override
-    public int getMaxEnergyStored(ItemStack container)
-    {
-        // Energetic Infuser won't keep offering energy if this is 0
-        return isChargeable
-                ? container.getItemDamage() * Constants.RF_PER_DAMAGE
-                : 0;
-
     }
 
 }

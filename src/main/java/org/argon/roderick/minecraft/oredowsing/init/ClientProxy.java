@@ -7,9 +7,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 public class ClientProxy extends CommonProxy {
 
-    public void init(FMLInitializationEvent e)
-    {
-        super.init(e);
+    public void init(FMLInitializationEvent e) {
         MinecraftForge.EVENT_BUS.register(new DowsingRodRenderer());
     }
 

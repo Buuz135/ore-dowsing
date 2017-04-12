@@ -3,6 +3,9 @@ package org.argon.roderick.minecraft.oredowsing.init;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.util.ResourceLocation;
 import org.argon.roderick.minecraft.oredowsing.items.DowsingRod;
 import org.argon.roderick.minecraft.oredowsing.lib.Constants;
 import org.argon.roderick.minecraft.oredowsing.lib.Reference;
@@ -10,8 +13,6 @@ import org.argon.roderick.minecraft.oredowsing.recipe.RecipeDowsingRodUpgrade;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.RenderItem;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -124,13 +125,13 @@ public class ModItems
         createDowsingRod(config, "Diamond", "minecraft:diamond",    "minecraft:emerald",                     "",                       true, 1000,     8, true,  true, "minecraft:diamond",           4,        16);
 
         for (DowsingRod rod : dowsingRods) {
-            GameRegistry.registerItem(rod, rod.getName());
+            GameRegistry.register(rod, new ResourceLocation(Reference.MODID + ":" + rod.getName()));
         }
     }
 
     public static void init(FMLInitializationEvent event)
     {
-        GameRegistry.addRecipe(new RecipeDowsingRodUpgrade());
+        //GameRegistry.addRecipe(new RecipeDowsingRodUpgrade());//TODO fix
         for (DowsingRod rod : dowsingRods) {
             GameRegistry.addRecipe(
                    new ItemStack(rod),
@@ -157,7 +158,7 @@ public class ModItems
         if (data.length < 2) {
             return null;
         }
-        Item item = GameRegistry.findItem(data[0], data[1]);
+        Item item = Item.getByNameOrId(s);
         if (item == null) {
             return null;
         }
@@ -166,7 +167,7 @@ public class ModItems
 
     public static Block getBlockForString(String s) {
         String[] data = s.split(":");
-        return data.length < 2 ? null : GameRegistry.findBlock(data[0], data[1]);
+        return data.length < 2 ? null : Block.getBlockFromName(s);
     }
 
 }

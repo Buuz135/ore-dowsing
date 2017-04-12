@@ -1,5 +1,6 @@
 package org.argon.roderick.minecraft.oredowsing.recipe;
 
+import net.minecraft.util.NonNullList;
 import org.argon.roderick.minecraft.oredowsing.items.DowsingRod;
 
 import net.minecraft.inventory.InventoryCrafting;
@@ -108,16 +109,16 @@ public class RecipeDowsingRodUpgrade implements IRecipe {
 
 	// XXX unclear about what this does but all the core implementors I looked at
 	// had exactly this
-	
-	@Override
-    public ItemStack[] getRemainingItems(InventoryCrafting inv)
-    {
-        ItemStack[] aitemstack = new ItemStack[inv.getSizeInventory()];
 
-        for (int i = 0; i < aitemstack.length; ++i)
+
+	@Override
+    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
+    {
+        NonNullList<ItemStack> aitemstack = NonNullList.withSize(inv.getSizeInventory(),ItemStack.EMPTY);
+        for (int i = 0; i < aitemstack.size(); ++i)
         {
             ItemStack itemstack = inv.getStackInSlot(i);
-            aitemstack[i] = net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack);
+            aitemstack.set(i,net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
         }
 
         return aitemstack;
