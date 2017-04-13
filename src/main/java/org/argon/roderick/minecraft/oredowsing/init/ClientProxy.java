@@ -1,9 +1,8 @@
 package org.argon.roderick.minecraft.oredowsing.init;
 
-import org.argon.roderick.minecraft.oredowsing.render.DowsingRodRenderer;
-
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import org.argon.roderick.minecraft.oredowsing.render.DowsingRodRenderer;
 
 public class ClientProxy extends CommonProxy {
 

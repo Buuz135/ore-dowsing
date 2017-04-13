@@ -1,12 +1,11 @@
 package org.argon.roderick.minecraft.oredowsing.recipe;
 
-import net.minecraft.util.NonNullList;
-import org.argon.roderick.minecraft.oredowsing.items.DowsingRod;
-
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
+import org.argon.roderick.minecraft.oredowsing.items.DowsingRod;
 
 public class RecipeDowsingRodUpgrade implements IRecipe {
 
@@ -15,13 +14,11 @@ public class RecipeDowsingRodUpgrade implements IRecipe {
         DowsingRod dowsingRodItem;
         int numUpgrades;
 
-        private ParsedRecipe()
-        {
+        private ParsedRecipe() {
             this.numUpgrades = 0;
         }
 
-        private boolean parseRecipe(InventoryCrafting inv_crafting)
-        {
+        private boolean parseRecipe(InventoryCrafting inv_crafting) {
             int i;
 
             // find dowsing rod
@@ -29,10 +26,9 @@ public class RecipeDowsingRodUpgrade implements IRecipe {
             int dowsing_rod_slot = -1;
             for (i = 0; i < inv_crafting.getSizeInventory(); i++) {
                 ItemStack stack = inv_crafting.getStackInSlot(i);
-                if (stack == null) {
+                if (stack.isEmpty()) {
                     continue;
-                }
-                else if (stack.getItem() instanceof DowsingRod) {
+                } else if (stack.getItem() instanceof DowsingRod) {
                     dowsing_rod_slot = i;
                     this.dowsingRodStack = stack;
                     break;
@@ -57,13 +53,10 @@ public class RecipeDowsingRodUpgrade implements IRecipe {
                     continue;
                 }
                 ItemStack stack = inv_crafting.getStackInSlot(i);
-                if (stack == null) {
-                    continue;
-                }
-                else if (stack.isItemEqual(upgrade_stack)) {
+                if (stack.isEmpty()) {continue;
+                } else if (stack.isItemEqual(upgrade_stack)) {
                     num_items++;
-                }
-                else {
+                } else {
                     return false;
                 }
             }
@@ -77,14 +70,12 @@ public class RecipeDowsingRodUpgrade implements IRecipe {
     }
 
     @Override
-    public boolean matches(InventoryCrafting inv_crafting, World world)
-    {
+    public boolean matches(InventoryCrafting inv_crafting, World world) {
         return new ParsedRecipe().parseRecipe(inv_crafting);
     }
 
     @Override
-    public ItemStack getCraftingResult(InventoryCrafting inv_crafting)
-    {
+    public ItemStack getCraftingResult(InventoryCrafting inv_crafting) {
         ParsedRecipe parsed = new ParsedRecipe();
 
         if (!parsed.parseRecipe(inv_crafting))
@@ -96,29 +87,25 @@ public class RecipeDowsingRodUpgrade implements IRecipe {
     }
 
     @Override
-    public int getRecipeSize()
-    {
+    public int getRecipeSize() {
         return 9;
     }
 
     @Override
-    public ItemStack getRecipeOutput()
-    {
-        return null;
+    public ItemStack getRecipeOutput() {
+        return ItemStack.EMPTY;
     }
 
-	// XXX unclear about what this does but all the core implementors I looked at
-	// had exactly this
+    // XXX unclear about what this does but all the core implementors I looked at
+    // had exactly this
 
 
-	@Override
-    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
-    {
-        NonNullList<ItemStack> aitemstack = NonNullList.withSize(inv.getSizeInventory(),ItemStack.EMPTY);
-        for (int i = 0; i < aitemstack.size(); ++i)
-        {
+    @Override
+    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) {
+        NonNullList<ItemStack> aitemstack = NonNullList.withSize(inv.getSizeInventory(), ItemStack.EMPTY);
+        for (int i = 0; i < aitemstack.size(); ++i) {
             ItemStack itemstack = inv.getStackInSlot(i);
-            aitemstack.set(i,net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
+            aitemstack.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
         }
 
         return aitemstack;

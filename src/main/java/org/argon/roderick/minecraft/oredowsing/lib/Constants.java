@@ -14,11 +14,10 @@ public class Constants {
 
     // mine, configurable
     public static double RENDER_DURATION;
-    public static int    RF_PER_DAMAGE;
+    public static int RF_PER_DAMAGE;
 
-    public static void preInit(FMLPreInitializationEvent event, Configuration config)
-    {
+    public static void preInit(FMLPreInitializationEvent event, Configuration config) {
         RENDER_DURATION = config.get(Configuration.CATEGORY_GENERAL, "render_duration", 30.0D, "duration that the block outline stays on the screen (seconds)").getDouble();
-        RF_PER_DAMAGE   = config.get(Configuration.CATEGORY_GENERAL, "rf_per_use",       3000, "RF to recharge/repair 1 use").getInt();
+        RF_PER_DAMAGE = config.get(Configuration.CATEGORY_GENERAL, "rf_per_use", 3000, "RF to recharge/repair 1 use").getInt();
     }
 }
