@@ -36,27 +36,8 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void postInit() {
-        File oreColorFile = new File("config" + File.separator + Reference.MOD_ID + File.separator + OreDowsingConfig.file);
-        if (!oreColorFile.exists()) {
-            try {
-                oreColorFile.createNewFile();
-                FileUtils.copyFile(new File(getClass().getClassLoader().getResource("assets/oredowsing/oreColor.json").getFile()), oreColorFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            OreColor.oreColors = new Gson().fromJson(new JsonReader(new FileReader(oreColorFile)), OreColor[].class);
-            checkForUncoloredEntries();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
     }
 
-    public void checkForUncoloredEntries() {
-        StringBuilder builder = new StringBuilder("Missing info for this oredictionary entries: ");
-        for (String s : OreDictionary.getOreNames()) {
-            //System.out.println(s); //Todo Check
-        }
-    }
+
 }

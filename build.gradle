@@ -20,6 +20,9 @@ version = "11.11.2-1.0-BETA"
 group= "com.buuz135.oredowsing" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "OreDowsing"
 
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
 minecraft {
     version = "1.11.2-13.20.0.2228"
     runDir = "run"
@@ -55,8 +58,6 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    // CoFHLib is for optional RF API
-    compile files("libs/CoFHLib-[1.7.10]1.0.4B1-176-dev.jar")
     compileOnly "org.projectlombok:lombok:1.16.16"
 }
 

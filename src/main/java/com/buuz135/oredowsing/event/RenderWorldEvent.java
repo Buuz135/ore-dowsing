@@ -21,7 +21,7 @@ import java.util.Hashtable;
 
 public class RenderWorldEvent {
 
-    public static Hashtable<BlockPos, BlockHighlight> blockHighlightHashtable = new Hashtable<>();
+    public static Hashtable<BlockPos, BlockHighlight> blockHighlightHashtable = new Hashtable<BlockPos, BlockHighlight>();
 
     @SubscribeEvent
     public void onRender(RenderWorldLastEvent event) {

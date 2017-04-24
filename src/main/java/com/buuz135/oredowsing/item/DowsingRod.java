@@ -97,7 +97,7 @@ public class DowsingRod extends ItemEnergy {
         ItemStack stack = playerIn.getHeldItem(handIn);
         checkForNBT(stack);
         useRod(playerIn, worldIn, stack);
-        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
 
 
@@ -159,7 +159,7 @@ public class DowsingRod extends ItemEnergy {
             case 1:
                 if (canUse(stack, 200)) {
                     player.sendMessage(new TextComponentTranslation("text.ores_nearby").setStyle(new Style().setColor(TextFormatting.GRAY)));
-                    List<Item> items = new ArrayList<>();
+                    List<Item> items = new ArrayList<Item>();
                     for (BlockPos pos : getNerbyOres(new BlockPos(player.posX, player.posY, player.posZ), radius, world)) {
                         Item item = Item.getItemFromBlock(world.getBlockState(pos).getBlock());
                         if (!items.contains(item)) {

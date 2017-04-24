@@ -20,10 +20,10 @@ public class GuiOreDowsingConfig extends GuiConfig {
 
     private static List<IConfigElement> getConfigElements() {
         final Configuration configuration = OreDowsingConfig.ConfigurationHolder.getConfiguration();
-
         final ConfigCategory topLevelCategory = configuration.getCategory(Configuration.CATEGORY_GENERAL);
-        topLevelCategory.getChildren().forEach(configCategory -> configCategory.setLanguageKey(Reference.MOD_ID + configCategory.getName()));
-
+        for (ConfigCategory category : topLevelCategory.getChildren()){
+            category.setLanguageKey(Reference.MOD_ID + category.getName());
+        }
         return new ConfigElement(topLevelCategory).getChildElements();
     }
 

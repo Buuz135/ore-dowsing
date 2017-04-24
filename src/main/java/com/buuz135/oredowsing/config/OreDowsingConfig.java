@@ -15,6 +15,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Config(modid = Reference.MOD_ID, name = Reference.MOD_ID + "/" + Reference.MOD_ID)
@@ -53,11 +54,12 @@ public class OreDowsingConfig {
 
                     final Map<String, Configuration> configsMap = (Map<String, Configuration>) CONFIGS_GETTER.invokeExact();
 
-                    final Optional<Map.Entry<String, Configuration>> entryOptional = configsMap.entrySet().stream()
-                            .filter(entry -> fileName.equals(new File(entry.getKey()).getName()))
-                            .findFirst();
-
-                    entryOptional.ifPresent(stringConfigurationEntry -> configuration = stringConfigurationEntry.getValue());
+                    for (Map.Entry<String, Configuration> stringConfigurationEntry : configsMap.entrySet()) {
+                        if (fileName.equals(new File(stringConfigurationEntry.getKey()).getName())){
+                            configuration = stringConfigurationEntry.getValue();
+                            break;
+                        }
+                    }
                 } catch (Throwable throwable) {
                     //Logger.error(throwable, "Failed to get Configuration instance");
                 }
