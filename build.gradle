@@ -16,7 +16,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 
 
-version = "11.11.2-1.0-BETA"
+version = "11.11.2-1.0.1-BETA"
 group= "com.buuz135.oredowsing" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "OreDowsing"
 
@@ -70,6 +70,7 @@ processResources
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
+        include 'oreColor.json'
 
         // replace version and mcversion
         expand 'version':project.version, 'mcversion':project.minecraft.version
@@ -78,5 +79,6 @@ processResources
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+        exclude 'oreColor.json'
     }
 }

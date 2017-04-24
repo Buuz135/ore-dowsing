@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.NAME, version = Reference.VERSION, guiFactory = Reference.GUI_FACTORY)
 public class OreDowsing {
@@ -52,17 +53,17 @@ public class OreDowsing {
     public void postInit(FMLPostInitializationEvent event) {
         proxy.postInit();
         File oreColorFile = new File("config" + File.separator + Reference.MOD_ID + File.separator + OreDowsingConfig.file);
+        Logger.getLogger("test").info(oreColorFile.getAbsolutePath());
         if (!oreColorFile.exists()) {
             try {
                 oreColorFile.createNewFile();
-                FileUtils.copyFile(new File(getClass().getClassLoader().getResource("assets/oredowsing/oreColor.json").getFile()), oreColorFile);
+                FileUtils.copyURLToFile(getClass().getResource("/assets/oredowsing/oreColor.json"), oreColorFile);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         try {
             OreColor.oreColors = new Gson().fromJson(new JsonReader(new FileReader(oreColorFile)), OreColor[].class);
-            checkForUncoloredEntries();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
