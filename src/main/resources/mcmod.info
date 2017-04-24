@@ -1,6 +1,5 @@
 [
 {
-  # XXX can't these come with ${}?
   "modid": "oredowsing",
   "name": "Ore Dowsing",
   "description": "Dowsing rods to help find ores and other blocks.",
@@ -8,10 +7,9 @@
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
-  "authorList": ["Popsnorkle"],
+  "authorList": ["Popsnorkle","Buuz135"],
   "credits": "",
   "logoFile": "",
-  "screenshots": [],
-  "dependencies": ["CoFHAPI|energy"]
+  "screenshots": []
 }
 ]

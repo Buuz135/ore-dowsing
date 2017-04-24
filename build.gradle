@@ -16,8 +16,8 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 
 
-version = "1.8-0.7"
-group= "org.argon.roderick.minecraft.oredowsing" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+version = "11.11.2-1.0-BETA"
+group= "com.buuz135.oredowsing" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "OreDowsing"
 
 minecraft {
@@ -57,7 +57,7 @@ dependencies {
 
     // CoFHLib is for optional RF API
     compile files("libs/CoFHLib-[1.7.10]1.0.4B1-176-dev.jar")
-
+    compileOnly "org.projectlombok:lombok:1.16.16"
 }
 
 processResources

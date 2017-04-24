@@ -1,7 +1,7 @@
 item.oredowsing_WoodDowsingRod.name=    Wood Dowsing Rod
 item.oredowsing_IronDowsingRod.name=    Iron Dowsing Rod
 item.oredowsing_GoldDowsingRod.name=    Gold Dowsing Rod
-item.oredowsing_DiamondDowsingRod.name= Diamond Dowsing Rod
+item.oredowsing:dowsing_rod.name=Dowsing Rod
 
 text.oredowsing.all_ores=all ores
 
@@ -14,3 +14,5 @@ text.oredowsing.tooltip.4.p=Upgrade with %dx %s in a crafting grid.
 
 text.oredowsing.change_target.yes=Target set to %s
 text.oredowsing.change_target.no= This item doesn't allow changing the target block
+
+text.ores_nearby=Ores nearby:

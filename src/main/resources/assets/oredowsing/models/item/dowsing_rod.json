@@ -1,7 +1,7 @@
 {
   "parent": "builtin/generated",
   "textures": {
-    "layer0": "oredowsing:items/DiamondDowsingRod"
+    "layer0": "oredowsing:items/dowsingrod"
   },
   "display": {
     "thirdperson": {
