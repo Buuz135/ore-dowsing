@@ -16,7 +16,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 
 
-version = "11.11.2-1.0.1-BETA"
+version = "1.11.2-1.0.1-BETA"
 group= "com.buuz135.oredowsing" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "OreDowsing"
 
