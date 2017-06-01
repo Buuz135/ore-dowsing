@@ -15,8 +15,19 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 
+String build = ""
+if (project.hasProperty("teamcity")) {
+    build = System.getenv("BUILD_NUMBER")
+}
 
-version = "1.11.2-1.0.1-BETA"
+String mc = "1.11.2"
+String v = "1.0.1-BETA"
+if (build == null || build == ""){
+    version = mc+"-"+v
+}else{
+    version = mc+"-"+v+"-"+ build
+}
+
 group= "com.buuz135.oredowsing" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "OreDowsing"
 
